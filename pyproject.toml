@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "lotto-manager"
+version = "0.1.0"
+description = ""
+authors = ["ghagintonbear"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pandas = "^1.1.5"
+xlrd = "^2.0.1"
+requests = "^2.25.0"
+beautifulsoup4 = "^4.9.3"
+XlsxWriter = "^1.3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
