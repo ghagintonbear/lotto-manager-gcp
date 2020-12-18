@@ -5,8 +5,6 @@ import requests
 from bs4 import BeautifulSoup as bSoup
 import pandas as pd
 
-logging.basicConfig(format="[%(filename)s: %(funcName)s] %(message)s")
-
 
 def scrape_historical_results(base_url: str) -> pd.DataFrame:
     draw_history_url_path = base_url + '/results/euromillions/draw-history'
@@ -40,8 +38,24 @@ def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict
     return draw_result
 
 
-if __name__ == '__main__':
-    base_url = 'https://www.national-lottery.co.uk'
-    historical_data = scrape_historical_results(base_url)
-    draw_result = extract_draw_result(datetime(2020, 12, 15), historical_data)
-    print(draw_result)
+def scrape_prize_breakdown(base_url: str, draw_number: int) -> dict:
+    logging.warning('hello mate')
+    breakdown_url_ext = f'/results/euromillions/draw-history/prize-breakdown/{draw_number}'
+    breakdown_page = requests.get(base_url + breakdown_url_ext)
+    breakdown_soup = bSoup(breakdown_page.content, 'html.parser')
+    prize_breakdown = {}
+    for table in breakdown_soup.find_all('table'):
+        if table.get('summary').startswith('Table displaying prize breakdown'):
+            match_type = None
+            prize = None
+            for tag in table.find_all('td'):
+                if tag.get('data-th') == 'No. of matches':
+                    match_type = tag.text.strip()
+                if tag.get('data-th') == 'Prize per UK winner':
+                    prize = tag.text.strip()
+                if match_type is not None and prize is not None:
+                    prize_breakdown[match_type] = prize
+                    match_type = None
+                    prize = None
+
+    return prize_breakdown
