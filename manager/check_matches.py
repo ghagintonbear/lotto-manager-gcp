@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def collect_numbers(results: dict) -> (list, list):
+def collect_numbers(results: dict) -> dict:
     winning = {}
     for key, value in results.items():
         if key.startswith('Ball') or key.startswith('Lucky Star'):
@@ -12,8 +12,8 @@ def collect_numbers(results: dict) -> (list, list):
 
 
 def match_type_label(row: pd.Series) -> str:
-    ball_match = row['ball_match']
-    star_match = row['star_match']
+    ball_match = row['Balls Matched']
+    star_match = row['Stars Matched']
     if ball_match == 0 or star_match == 0:
         return 'Match ' + str(ball_match)
     elif ball_match > 0 and star_match == 1:
@@ -24,11 +24,11 @@ def match_type_label(row: pd.Series) -> str:
 
 def check_matches_on_selected(selected: pd.DataFrame, winning: dict, prize_breakdown: dict) -> pd.DataFrame:
     number_cols = [col for col in selected.columns if col.startswith('Number')]
-    star_cols = [col for col in selected.columns if col.startswith('Lucky Stars')]
+    star_cols = [col for col in selected.columns if col.startswith('Lucky Star')]
 
     selected['Balls Matched'] = selected.loc[:, number_cols].isin(winning['Balls']).sum(axis=1)
     selected['Stars Matched'] = selected.loc[:, star_cols].isin(winning['Lucky Stars']).sum(axis=1)
     selected['Match Type'] = selected[['Balls Matched', 'Stars Matched']].apply(match_type_label, axis=1)
-    selected['prize'] = selected['match_type'].map(prize_breakdown).fillna('£0.00')
+    selected['Prize'] = selected['Match Type'].map(prize_breakdown).fillna('£0.00')
 
     return selected
