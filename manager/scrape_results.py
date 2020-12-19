@@ -7,6 +7,7 @@ import pandas as pd
 
 
 def scrape_historical_results(base_url: str) -> pd.DataFrame:
+    """ on draw history page, find href link to csv and use pandas to read it. """
     draw_history_url_path = base_url + '/results/euromillions/draw-history'
 
     draw_history_page = requests.get(draw_history_url_path)
@@ -26,6 +27,7 @@ def scrape_historical_results(base_url: str) -> pd.DataFrame:
 
 
 def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict:
+    """ from historical results DataFrame extract the result information for the selected draw date. """
     hist_results['DrawDate'] = pd.to_datetime(hist_results['DrawDate'], format='%d-%b-%Y')
     draw_date_mask = hist_results['DrawDate'] == draw_date
 
@@ -40,6 +42,8 @@ def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict
 
 
 def scrape_prize_breakdown(base_url: str, draw_number: int) -> dict:
+    """ from the selected prize breakdown page, find the prize breakdown table and extract the
+        No. of matches and the Prize per UK winner information into a dict as respective key: value pair."""
     breakdown_url_ext = f'/results/euromillions/draw-history/prize-breakdown/{draw_number}'
     breakdown_page = requests.get(base_url + breakdown_url_ext)
     breakdown_soup = bSoup(breakdown_page.content, 'html.parser')

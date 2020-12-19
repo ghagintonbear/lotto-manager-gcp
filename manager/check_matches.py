@@ -2,6 +2,9 @@ import pandas as pd
 
 
 def collect_numbers(results: dict) -> dict:
+    """ results dict has 1 ball number per key. this helper func collects ball numbers and lucky star
+        numbers into their respective lists and packages them into a new dict.
+    """
     winning = {}
     for key, value in results.items():
         if key.startswith('Ball') or key.startswith('Lucky Star'):
@@ -12,6 +15,9 @@ def collect_numbers(results: dict) -> dict:
 
 
 def match_type_label(row: pd.Series) -> str:
+    """ recreates the match type label you see on the prize breakdown table e.g. Match 5 + 2 Stars, based on
+        how many matches accomplished.
+    """
     ball_match = row['Balls Matched']
     star_match = row['Stars Matched']
     if ball_match == 0 or star_match == 0:
@@ -23,6 +29,11 @@ def match_type_label(row: pd.Series) -> str:
 
 
 def check_matches_on_selected(selected: pd.DataFrame, winning: dict, prize_breakdown: dict) -> pd.DataFrame:
+    """ Performs operations on selected DataFrame to determine:
+        * how many balls and stars matched
+        * match type label achieved, e.g. Match 5 + 2 Stars
+        * the respective winnings associated with the match type label.
+    """
     number_cols = [col for col in selected.columns if col.startswith('Number')]
     star_cols = [col for col in selected.columns if col.startswith('Lucky Star')]
 
