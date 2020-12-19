@@ -29,9 +29,9 @@ def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict
     draw_date_mask = hist_results['DrawDate'] == draw_date
 
     if draw_date_mask.sum() == 0:
-        raise Exception(f'Selected draw_date: "{draw_date: %d-%m-%Y}" not in hist_results["DrawDate"]')
+        raise Exception(f'Selected draw_date: "{draw_date:%d-%m-%Y}" not in hist_results["DrawDate"]')
     if draw_date_mask.sum() > 1:
-        raise Exception(f'Selected draw_date: "{draw_date: %d-%m-%Y}" maps to many in hist_results["DrawDate"]')
+        raise Exception(f'Selected draw_date: "{draw_date:%d-%m-%Y}" maps to many in hist_results["DrawDate"]')
 
     draw_result = hist_results[draw_date_mask].to_dict('records')[0]
 
@@ -39,7 +39,6 @@ def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict
 
 
 def scrape_prize_breakdown(base_url: str, draw_number: int) -> dict:
-    logging.warning('hello mate')
     breakdown_url_ext = f'/results/euromillions/draw-history/prize-breakdown/{draw_number}'
     breakdown_page = requests.get(base_url + breakdown_url_ext)
     breakdown_soup = bSoup(breakdown_page.content, 'html.parser')
