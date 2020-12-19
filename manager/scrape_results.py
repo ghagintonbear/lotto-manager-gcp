@@ -11,17 +11,18 @@ def scrape_historical_results(base_url: str) -> pd.DataFrame:
 
     draw_history_page = requests.get(draw_history_url_path)
     draw_history_soup = bSoup(draw_history_page.content, 'html.parser')
-    # TODO: try except this get instead. Then raise error if href doesn't end in csv
-    link_to_csv = base_url + draw_history_soup.find(id='download_history_action').get('href')
+    href_id = 'download_history_action'
 
     try:
-        historical_results = pd.read_csv(link_to_csv)
-    except Exception as E:
-        logging.error(f'Failed to read data from: "{link_to_csv}"')
-        logging.error(f'Caused by: {E}')
+        link_to_csv = base_url + draw_history_soup.find(id=href_id).get('href')
+    except AttributeError as E:
+        logging.error(f'Failed to find html tag with id="{href_id}" in soup.')
         raise E
 
-    return historical_results
+    if not link_to_csv.endswith('csv'):
+        raise ValueError(f"Can't find csv at this link: {link_to_csv}")
+
+    return pd.read_csv(link_to_csv)
 
 
 def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict:

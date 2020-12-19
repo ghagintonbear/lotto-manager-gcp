@@ -21,6 +21,10 @@ def mock_request_get(url):
         response_content = read_html('draw_history')
     elif url == '/results/euromillions/draw-history/prize-breakdown/1381':
         response_content = read_html('prize_breakdown')
+    elif url == 'wrong-page/results/euromillions/draw-history':
+        response_content = read_html('prize_breakdown')
+    elif url == 'not-csv/results/euromillions/draw-history':
+        response_content = read_html('draw_history_wrong_csv_link')
     else:
         response_content = 'wrong-link'
 
@@ -31,7 +35,21 @@ def mock_read_csv(url):
     if url == '/results/euromillions/draw-history/csv':
         return 'success'
     else:
-        raise Exception
+        return 'failed'
+
+
+@patch('requests.get', mock_request_get)
+def test_scrape_historical_results_raise_attribute_error():
+
+    with raises(AttributeError, match="'NoneType' object has no attribute 'get'"):
+        scrape_historical_results(base_url='wrong-page')
+
+
+@patch('requests.get', mock_request_get)
+def test_scrape_historical_results_raise_value_error():
+
+    with raises(ValueError, match="Can't find csv at this link:.*"):
+        scrape_historical_results(base_url='not-csv')
 
 
 @patch('pandas.read_csv', mock_read_csv)
