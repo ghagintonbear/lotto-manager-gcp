@@ -11,7 +11,7 @@ def scrape_historical_results(base_url: str) -> pd.DataFrame:
 
     draw_history_page = requests.get(draw_history_url_path)
     draw_history_soup = bSoup(draw_history_page.content, 'html.parser')
-
+    # TODO: try except this get instead. Then raise error if href doesn't end in csv
     link_to_csv = base_url + draw_history_soup.find(id='download_history_action').get('href')
 
     try:
