@@ -38,7 +38,9 @@ def mock_read_csv(url):
 @patch('requests.get', mock_request_get)
 def test_scrape_historical_results():
 
-    scrape_historical_results(base_url='')
+    historical_results = scrape_historical_results(base_url='')
+
+    assert historical_results == 'success'
 
 
 @patch('requests.get', mock_request_get)
