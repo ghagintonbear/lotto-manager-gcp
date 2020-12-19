@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def collect_numbers(results: dict) -> dict:
+def collect_winning_numbers(results: dict) -> dict:
     """ results dict has 1 ball number per key. this helper func collects ball numbers and lucky star
         numbers into their respective lists and packages them into a new dict.
     """
