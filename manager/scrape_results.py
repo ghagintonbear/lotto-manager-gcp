@@ -29,7 +29,7 @@ def scrape_historical_results(base_url: str) -> pd.DataFrame:
 def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict:
     """ from historical results DataFrame extract the result information for the selected draw date. """
     hist_results['DrawDate'] = pd.to_datetime(hist_results['DrawDate'], format='%d-%b-%Y')
-    draw_date_mask = hist_results['DrawDate'] == draw_date
+    draw_date_mask = hist_results['DrawDate'] == pd.to_datetime(draw_date)
 
     if draw_date_mask.sum() == 0:
         raise Exception(f'Selected draw_date: "{draw_date:%d-%m-%Y}" not in hist_results["DrawDate"]')
