@@ -4,8 +4,9 @@ import pandas as pd
 
 from manager.scrape_results import scrape_historical_results, extract_draw_result, scrape_prize_breakdown
 from manager.check_matches import collect_winning_numbers, check_matches_on_selected
-from manager.writer import write_results
+from manager.writer import write_result, write_cumulative_result
 from manager.tools import get_last_friday_date, get_folder_name, make_results_folder
+from manager.cumulate_results import compute_cumulative_result
 
 
 def run_manager(base_url: str, selected: pd.DataFrame, run_date: datetime = datetime.now()):
@@ -18,8 +19,8 @@ def run_manager(base_url: str, selected: pd.DataFrame, run_date: datetime = date
 
     results = check_matches_on_selected(selected, winning_numbers, prize_breakdown)
 
-    write_results(folder_path=folder_path, file_name=draw_date_str, results=results,
-                  draw_result=draw_result, prize_breakdown=prize_breakdown)
+    write_result(folder_path=folder_path, file_name=draw_date_str, result=results,
+                 draw_result=draw_result, prize_breakdown=prize_breakdown)
 
     return results
 
@@ -34,3 +35,10 @@ def get_draw_information(base_url: str, draw_date: datetime) -> (dict, dict):
 def run_manager_between(base_url: str, selected: pd.DataFrame, start: datetime, end: datetime, freq: str = '7D'):
     for run_date in pd.date_range(start, end, freq=freq):
         run_manager(base_url, selected, run_date)
+
+
+def produce_cumulative_report():
+    cumulative_result = compute_cumulative_result()
+    cumulative_result = pd.DataFrame(cumulative_result)
+    aggregated_result = cumulative_result.groupby('Interval', as_index=False)[['Winnings', 'Winning per Person']].sum()
+    write_cumulative_result(cumulative_result, aggregated_result)
