@@ -1,27 +1,22 @@
 from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.styles import Alignment, NamedStyle
+from openpyxl.styles import Alignment
 import pandas as pd
 
 
-def write_cumulative_result(cumulative: pd.DataFrame, aggregated: pd.DataFrame):
+def write_cumulative_result(frames: dict):
     workbook = Workbook()
     workbook.remove(workbook.active)
 
-    all_results_sheet = workbook.create_sheet('All Results')
-    aggregated_sheet = workbook.create_sheet('Aggregated')
-
-    write_dataframe(all_results_sheet, cumulative)
-    write_dataframe(aggregated_sheet, aggregated)
-
-    columns_to_currency(all_results_sheet, ['Winnings', 'Winning per Person', 'Cumulative Winnings per Person'])
-    columns_to_currency(aggregated_sheet, ['Winnings', 'Winning per Person'])
-
-    all_results_sheet.freeze_panes = 'A2'  # A2 appears to freeze top row, B2 first column.
+    sheets = {}
+    for name, (df, currency_cols) in frames.items():
+        sheets[name] = workbook.create_sheet(title=name)
+        write_dataframe(sheets[name], df)
+        sheets[name].freeze_panes = 'A2'  # A2 appears to freeze top row, B2 first column.
+        columns_to_currency(sheets[name], currency_cols)
 
     tidy_workbook(workbook)
-    workbook.add_named_style(NamedStyle(name='highlight'))
     workbook.save('./Master Results.xlsx')
 
 

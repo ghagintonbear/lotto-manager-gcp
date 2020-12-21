@@ -58,3 +58,9 @@ def make_results_folder(folder_name: str) -> str:
         os.mkdir(path_to_new_folder)
 
     return path_to_new_folder
+
+
+def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:
+    total = data.sum()
+    total[col] = 'SUM'
+    return data.append(total, ignore_index=True)
