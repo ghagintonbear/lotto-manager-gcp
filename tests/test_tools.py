@@ -35,5 +35,5 @@ def test_get_fri_date_str(today, last_fri, last_fri_str):
         (datetime.date(2022, 4, 9), '2022-04-01__2022-04-29')
     ]
 )
-def test_get_fri_date_str(date, folder_name):
+def test_get_folder_name(date, folder_name):
     assert get_folder_name(date) == folder_name

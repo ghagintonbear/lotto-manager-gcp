@@ -5,8 +5,8 @@ import pandas as pd
 from manager.scrape_results import scrape_historical_results, extract_draw_result, scrape_prize_breakdown
 from manager.check_matches import collect_winning_numbers, check_matches_on_selected
 from manager.writer import write_result, write_cumulative_result
-from manager.tools import get_last_friday_date, get_folder_name, make_results_folder
-from manager.cumulate_results import compute_cumulative_result
+from manager.tools import get_last_friday_date, get_folder_name, make_results_folder, add_sum_row
+from manager.cumulate_results import compute_cumulated_result
 
 
 def run_manager(base_url: str, selected: pd.DataFrame, run_date: datetime = datetime.now()):
@@ -38,7 +38,13 @@ def run_manager_between(base_url: str, selected: pd.DataFrame, start: datetime, 
 
 
 def produce_cumulative_report():
-    cumulative_result = compute_cumulative_result()
-    cumulative_result = pd.DataFrame(cumulative_result)
-    aggregated_result = cumulative_result.groupby('Interval', as_index=False)[['Winnings', 'Winning per Person']].sum()
-    write_cumulative_result(cumulative_result, aggregated_result)
+    general_overview, player_breakdown = compute_cumulated_result()
+
+    player_summary = player_breakdown.groupby('Interval', as_index=False).sum()
+    player_summary = add_sum_row('Interval', player_summary)
+
+    write_cumulative_result({
+        'Player Summary': (player_summary, player_summary.dtypes[player_summary.dtypes != 'object'].index),
+        'Player Breakdown': (player_breakdown, player_breakdown.dtypes[player_breakdown.dtypes != 'object'].index),
+        'General Overview': (general_overview, ['Winnings', 'Winning per Person'])
+    })
