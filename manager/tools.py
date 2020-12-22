@@ -71,18 +71,18 @@ def get_selected_numbers(path: str = './Selected Numbers.xlsx'):
 
     if not selected['Name'].is_unique:
         duplicates = selected['Name'].value_counts()
-        raise ValueError(f'Selected numbers needs unique Name column. Correct:{duplicates[duplicates > 1]}')
+        raise ValueError(f'"Name" in Selected numbers needs to be unique. Correct:\n{duplicates[duplicates > 1]}')
 
     number_cols = [col for col in selected.columns if col.startswith('Number')]
-    assert_values_in_range(selected, cols=number_cols, start=1, end=50)
+    assert_values_in_range(selected, start=1, end=50, cols=number_cols)
 
     star_cols = [col for col in selected.columns if col.startswith('Lucky Star')]
-    assert_values_in_range(selected, cols=star_cols, start=1, end=12)
+    assert_values_in_range(selected, start=1, end=12, cols=star_cols)
 
     return selected
 
 
-def assert_values_in_range(data: pd.DataFrame, cols: list, start: int, end: int):
+def assert_values_in_range(data: pd.DataFrame, start: int, end: int, cols: list):
     if not cols:
         cols = data.columns
     if not set(cols).issubset(data.columns):
