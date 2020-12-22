@@ -1,35 +1,35 @@
 import os
-from datetime import timedelta, datetime
+from datetime import timedelta, date
 
 import pandas as pd
 
 
-def get_last_friday_date(date: datetime) -> (datetime, str):
+def get_last_friday_date(run_date: date) -> (date, str):
     """ User only runs on fridays. Therefore, given any date, function determines the
         date which the last friday occurred on.
     """
-    weekday_num = date.isoweekday()
+    weekday_num = run_date.isoweekday()
     if weekday_num > 5:
         diff = weekday_num - 5
     elif weekday_num < 5:
         diff = 7 - (5 - weekday_num)
     else:
         diff = 0
-    last_fri = (date - timedelta(days=diff)).date()
+    last_fri = run_date - timedelta(days=diff)
     last_fri_str = f"Fri {last_fri:%d}" + f" {last_fri:%B}"[0:4] + f" {last_fri:%Y}"
     return last_fri, last_fri_str
 
 
-def get_folder_name(selected_date: datetime) -> str:
+def get_folder_name(selected_date: date) -> str:
     """
     organise generated results into date range folders within ../results_archive.
     `date_range_start(end)` provided by user.
     if selected_date > end_range then it goes in the folder that starts there.
     """
-    def date_to_str(date: datetime) -> str: return f"{date:%Y-%m-%d}"
+    def date_to_str(a_date: date) -> str: return f"{a_date:%Y-%m-%d}"
 
-    date_range_start = datetime(2020, 1, 10)
-    date_range_end = datetime(2030, 12, 31)
+    date_range_start = date(2020, 1, 10)
+    date_range_end = date(2030, 12, 31)
     date_range_df = pd.DataFrame({
         'start': pd.date_range(date_range_start, date_range_end, freq='28D'),
         'end': pd.date_range(date_range_start + timedelta(days=28), date_range_end + timedelta(days=28), freq='28D')

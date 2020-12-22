@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from datetime import datetime
+from datetime import date
 
 from pytest import fixture, raises
 
@@ -89,22 +89,22 @@ def hist_data():
 
 
 def test_extract_draw_result_incorrect_date(hist_data):
-    draw_date = datetime(2020, 1, 15)
+    draw_date = date(2020, 1, 15)
     with raises(Exception, match=r'Selected draw_date: .* not in hist_results\[\"DrawDate\"\]'):
         extract_draw_result(draw_date, hist_data)
 
 
 def test_extract_draw_result_matches_multiple_dates(hist_data):
-    draw_date = datetime(2020, 12, 11)
+    draw_date = date(2020, 12, 11)
     with raises(Exception, match=r'Selected draw_date: .* maps to many in hist_results\[\"DrawDate\"\]'):
         extract_draw_result(draw_date, hist_data)
 
 
 def test_extract_draw_result_valid_date(hist_data):
-    draw_date = datetime(2020, 12, 15)
+    draw_date = date(2020, 12, 15)
 
     expected_result = {
-        'DrawDate': datetime(2020, 12, 15), 'Ball 1': 1, 'Ball 2': 3, 'Lucky Star 1': 5,
+        'DrawDate': date(2020, 12, 15), 'Ball 1': 1, 'Ball 2': 3, 'Lucky Star 1': 5,
         'UK Millionaire Maker': 'alpha', 'DrawNumber': 1966
     }
 

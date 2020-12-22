@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import date
 
 import requests
 from bs4 import BeautifulSoup as bSoup
@@ -26,7 +26,7 @@ def scrape_historical_results(base_url: str) -> pd.DataFrame:
     return pd.read_csv(link_to_csv)
 
 
-def extract_draw_result(draw_date: datetime, hist_results: pd.DataFrame) -> dict:
+def extract_draw_result(draw_date: date, hist_results: pd.DataFrame) -> dict:
     """ from historical results DataFrame extract the result information for the selected draw date. """
     hist_results['DrawDate'] = pd.to_datetime(hist_results['DrawDate'], format='%d-%b-%Y')
     draw_date_mask = hist_results['DrawDate'] == pd.to_datetime(draw_date)

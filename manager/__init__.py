@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import pandas as pd
 
@@ -9,7 +9,7 @@ from manager.tools import get_last_friday_date, get_folder_name, make_results_fo
 from manager.cumulate_results import compute_cumulated_result
 
 
-def run_manager(base_url: str, selected: pd.DataFrame, run_date: datetime = datetime.now()):
+def run_manager(base_url: str, selected: pd.DataFrame, run_date: date = datetime.now().date()):
     draw_date, draw_date_str = get_last_friday_date(run_date)
     folder_name = get_folder_name(draw_date)
     folder_path = make_results_folder(folder_name)
@@ -25,14 +25,14 @@ def run_manager(base_url: str, selected: pd.DataFrame, run_date: datetime = date
     return results
 
 
-def get_draw_information(base_url: str, draw_date: datetime) -> (dict, dict):
+def get_draw_information(base_url: str, draw_date: date) -> (dict, dict):
     historical_data = scrape_historical_results(base_url)
     draw_result = extract_draw_result(draw_date, historical_data)
     prize_breakdown = scrape_prize_breakdown(base_url, draw_result['DrawNumber'])
     return draw_result, prize_breakdown
 
 
-def run_manager_between(base_url: str, selected: pd.DataFrame, start: datetime, end: datetime, freq: str = '7D'):
+def run_manager_between(base_url: str, selected: pd.DataFrame, start: date, end: date, freq: str = '7D'):
     for run_date in pd.date_range(start, end, freq=freq):
         run_manager(base_url, selected, run_date)
 
