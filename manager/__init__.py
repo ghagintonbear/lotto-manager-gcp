@@ -7,7 +7,7 @@ from manager.check_matches import collect_winning_numbers, check_matches_on_sele
 from manager.writer import write_result, write_cumulative_result
 from manager.cumulate_results import compute_cumulated_result
 from manager.tools import (
-    get_last_friday_date, get_folder_name, make_results_folder, add_sum_row, assert_values_in_range
+    get_last_friday_date, get_folder_name, make_results_folder, add_sum_row, get_selected_numbers
 )
 
 
@@ -50,19 +50,3 @@ def produce_cumulative_report():
         'Player Breakdown': (player_breakdown, player_breakdown.dtypes[player_breakdown.dtypes != 'object'].index),
         'General Overview': (general_overview, ['Winnings', 'Winning per Person'])
     })
-
-
-def get_selected_numbers(path: str = './Selected Numbers.xlsx'):
-    selected = pd.read_excel(path, engine='openpyxl')
-
-    if not selected['Name'].is_unique:
-        duplicates = selected['Name'].value_counts()
-        raise ValueError(f'Selected numbers needs unique Name column. Correct:{duplicates[duplicates > 1]}')
-
-    number_cols = [col for col in selected.columns if col.startswith('Number')]
-    assert_values_in_range(selected, cols=number_cols, start=1, end=50)
-
-    star_cols = [col for col in selected.columns if col.startswith('Lucky Star')]
-    assert_values_in_range(selected, cols=star_cols, start=1, end=12)
-
-    return selected

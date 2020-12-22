@@ -66,6 +66,22 @@ def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:
     return data.append(total, ignore_index=True)
 
 
+def get_selected_numbers(path: str = './Selected Numbers.xlsx'):
+    selected = pd.read_excel(path, engine='openpyxl')
+
+    if not selected['Name'].is_unique:
+        duplicates = selected['Name'].value_counts()
+        raise ValueError(f'Selected numbers needs unique Name column. Correct:{duplicates[duplicates > 1]}')
+
+    number_cols = [col for col in selected.columns if col.startswith('Number')]
+    assert_values_in_range(selected, cols=number_cols, start=1, end=50)
+
+    star_cols = [col for col in selected.columns if col.startswith('Lucky Star')]
+    assert_values_in_range(selected, cols=star_cols, start=1, end=12)
+
+    return selected
+
+
 def assert_values_in_range(data: pd.DataFrame, cols: list, start: int, end: int):
     if not cols:
         cols = data.columns
