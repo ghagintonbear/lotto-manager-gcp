@@ -64,3 +64,16 @@ def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:
     total = data.sum()
     total[col] = 'SUM'
     return data.append(total, ignore_index=True)
+
+
+def assert_values_in_range(data: pd.DataFrame, cols: list, start: int, end: int):
+    if not cols:
+        cols = data.columns
+    if not set(cols).issubset(data.columns):
+        raise KeyError(f'{set(cols).difference(data.columns)} not in date.columns.')
+    for col in cols:
+        if not pd.api.types.is_numeric_dtype(data[col]):
+            raise TypeError(f'data["{col}"] is not numeric.')
+    mask = data[cols].isin(range(start, end+1)).all(axis=1)
+    if not mask.all():
+        raise ValueError(f'The following data are not between [{start}, {end}] inclusive:\n{data[~mask]}')
