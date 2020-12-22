@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import date
 
 import pandas as pd
 
@@ -12,11 +12,11 @@ if __name__ == '__main__':
     selected_numbers = pd.read_excel('./Selected Numbers.xlsx', engine='openpyxl')
 
     # run_manager(base_url, selected_numbers)
-    # run_manager_between(base_url, selected_numbers, datetime(2020, 6, 27), datetime(2020, 12, 20))
+    run_manager_between(base_url, selected_numbers, date(2020, 6, 27), date(2020, 12, 20))
 
-    run_manager_between(base_url, selected_numbers, datetime(2020, 6, 27), datetime(2020, 10, 20))
-    selected_numbers = selected_numbers[selected_numbers['Name'] != 'Ole']
-    run_manager_between(base_url, selected_numbers, datetime(2020, 10, 24), datetime(2020, 12, 20))
+    # run_manager_between(base_url, selected_numbers, date(2020, 6, 27), date(2020, 10, 20))
+    # selected_numbers = selected_numbers[selected_numbers['Name'] != 'Ole']
+    # run_manager_between(base_url, selected_numbers, date(2020, 10, 24), date(2020, 12, 20))
 
     produce_cumulative_report()
 
