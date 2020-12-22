@@ -5,8 +5,10 @@ import pandas as pd
 from manager.scrape_results import scrape_historical_results, extract_draw_result, scrape_prize_breakdown
 from manager.check_matches import collect_winning_numbers, check_matches_on_selected
 from manager.writer import write_result, write_cumulative_result
-from manager.tools import get_last_friday_date, get_folder_name, make_results_folder, add_sum_row
 from manager.cumulate_results import compute_cumulated_result
+from manager.tools import (
+    get_last_friday_date, get_folder_name, make_results_folder, add_sum_row, get_selected_numbers
+)
 
 
 def run_manager(base_url: str, selected: pd.DataFrame, run_date: date = datetime.now().date()):
