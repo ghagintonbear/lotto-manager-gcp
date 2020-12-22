@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from manager import run_manager_between, run_manager, produce_cumulative_report, get_selected_numbers
+from manager import get_selected_numbers, run_manager_between, run_manager, produce_cumulative_report
 
 logging.basicConfig(format="[%(filename)s: %(funcName)s] %(message)s")
 
