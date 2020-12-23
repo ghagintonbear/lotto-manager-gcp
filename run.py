@@ -16,6 +16,6 @@ if __name__ == '__main__':
     # selected_numbers = selected_numbers[selected_numbers['Name'] != 'Ole']
     # run_manager_between(base_url, selected_numbers, date(2020, 10, 24), date(2020, 12, 20))
 
-    # produce_cumulative_report()
+    produce_cumulative_report()
 
     pass
