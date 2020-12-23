@@ -1,7 +1,7 @@
 from pytest import fixture
 
 from manager.cumulate_results import (
-    calculate_general_overview_row
+    calculate_general_overview_row, calculate_player_prize_breakdown
 )
 
 
@@ -67,3 +67,48 @@ def test_calculate_general_overview_row_non_empty_store(result_data, play_interv
 
     assert outcome == expected
 
+
+def test_calculate_player_prize_breakdown_empty_store(result_data, play_interval, play_date):
+    result_data['Prize'] = result_data['Prize'].str.replace(r'[£,]', '').astype(float)
+
+    expected = {
+        'players': {'Johnson', 'Baby', 'Shampoo'},
+        'Interval': [play_interval],
+        'Play Date': [play_date],
+        'Johnson': [33335.66333333334],
+        'Baby': [33335.66333333334],
+        'Shampoo': [33335.66333333334]
+    }
+
+    outcome = calculate_player_prize_breakdown(result_data, {}, play_interval, play_date)
+
+    assert outcome == expected
+
+
+def test_calculate_player_prize_breakdown_non_empty_store(result_data, play_interval, play_date):
+    result_data['Prize'] = result_data['Prize'].str.replace(r'[£,]', '').astype(float)
+
+    pre_store = {
+        'players': {'Johnson', 'Baby', 'Kenny', 'Guido'},
+        'Interval': ['Interval_b', 'Interval_c'],
+        'Play Date': ['play_date_1', 'play_date_2'],
+        'Johnson': [10, 12.56],
+        'Baby': [10, 12.56],
+        'Kenny': [10, 12.56],
+        'Guido': [10, 12.56]
+    }
+
+    expected = {
+        'players': {'Johnson', 'Baby', 'Shampoo', 'Kenny', 'Guido'},
+        'Interval': ['Interval_b', 'Interval_c', play_interval],
+        'Play Date': ['play_date_1', 'play_date_2', play_date],
+        'Johnson': [10, 12.56, 33335.66333333334],
+        'Baby': [10, 12.56, 33335.66333333334],
+        'Shampoo': [None, None, 33335.66333333334],
+        'Kenny': [10, 12.56, None],
+        'Guido': [10, 12.56, None]
+    }
+
+    outcome = calculate_player_prize_breakdown(result_data, pre_store, play_interval, play_date)
+
+    assert outcome == expected
