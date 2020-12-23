@@ -11,7 +11,7 @@ def compute_cumulated_result(path_to_results='.\\result_archive\\*\\*.xlsx'):
         _, play_interval, filename = xlsx_file_path.rsplit('\\', maxsplit=2)
         play_date = filename.rsplit('.', maxsplit=1)[0]
         result = pd.read_excel(xlsx_file_path, sheet_name='Result', engine='openpyxl')
-        result['Prize'] = result['Prize'].str.replace('£', '').astype(float)
+        result['Prize'] = result['Prize'].str.replace(r'[£,]', '').astype(float)
 
         general_overview = calculate_general_overview_row(
             data=result, store=general_overview, play_interval=play_interval, play_date=play_date
