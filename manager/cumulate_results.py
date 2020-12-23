@@ -4,6 +4,7 @@ import pandas as pd
 
 
 def compute_cumulated_result(path_to_results='.\\result_archive\\*\\*.xlsx'):
+    """ Iterates over all .xlsx files in results_archive to produce bespoke summary tables requested by user. """
     general_overview = {}
     player_prize_breakdown = {}
     for xlsx_file_path in glob.glob(path_to_results):
@@ -20,12 +21,20 @@ def compute_cumulated_result(path_to_results='.\\result_archive\\*\\*.xlsx'):
             data=result, store=player_prize_breakdown, play_interval=play_interval, play_date=play_date
         )
 
-    player_prize_breakdown.pop('players')
+    player_prize_breakdown.pop('players')  # side effect of calculate_player_prize_breakdown
 
     return pd.DataFrame(general_overview), pd.DataFrame(player_prize_breakdown)
 
 
 def calculate_general_overview_row(data: pd.DataFrame, store: dict, play_interval: str, play_date: str) -> dict:
+    """ Bespoke logic to generate consecutive rows of general summary results from each play date.
+    Keys of dictionary are:
+        * Interval - list of interval values which play date falls into
+        * Play Date - list of draw dates in string format
+        * Winnings - list of total prize money won on given draw
+        * Num of Players - list of the number of players on given draw
+        * Winning Description - list of types of matches achieved on given draw
+    """
     store['Interval'] = store.get('Interval', []) + [play_interval]
     store['Play Date'] = store.get('Play Date', []) + [play_date]
     store['Winnings'] = store.get('Winnings', []) + [data['Prize'].sum()]
@@ -41,6 +50,12 @@ def calculate_general_overview_row(data: pd.DataFrame, store: dict, play_interva
 
 
 def calculate_player_prize_breakdown(data: pd.DataFrame, store: dict, play_interval: str, play_date: str) -> dict:
+    """ Bespoke logic to generate consecutive rows of prize received per player. Keys of dictionary are:
+        * players - set of all players to have every played
+        * Interval - list of interval values which play date falls into
+        * Play Date - list of draw dates in string format
+        * <Player Name> - list of prize money won per player on given `play_date`
+    """
     store['players'] = set(store.get('players', [])).union(data['Name'].values)
     store['Interval'] = store.get('Interval', []) + [play_interval]
     store['Play Date'] = store.get('Play Date', []) + [play_date]

@@ -67,6 +67,7 @@ def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_selected_numbers(path: str = './Selected Numbers.xlsx'):
+    """ validates Selected Numbers.xlsx. Ensures numbers selected are valid and there are no duplicates in Name col."""
     selected = pd.read_excel(path, engine='openpyxl')
 
     if not selected['Name'].is_unique:
@@ -83,6 +84,7 @@ def get_selected_numbers(path: str = './Selected Numbers.xlsx'):
 
 
 def assert_values_in_range(data: pd.DataFrame, start: int, end: int, cols: list):
+    """ checks if selected numbers in given data are within a range. """
     if not cols:
         cols = data.columns
     if not set(cols).issubset(data.columns):
