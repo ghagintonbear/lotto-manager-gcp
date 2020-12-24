@@ -1,5 +1,6 @@
 import logging
 from datetime import date
+import re
 
 import requests
 from bs4 import BeautifulSoup as bSoup
@@ -56,7 +57,8 @@ def scrape_prize_breakdown(base_url: str, draw_number: int) -> dict:
                 if tag.get('data-th') == 'No. of matches':
                     match_type = tag.text.strip()
                 if tag.get('data-th') == 'Prize per UK winner':
-                    prize = tag.text.strip()
+                    # TODO: changed pattern to r'[Â£,]' until decimal refactor
+                    prize = re.sub(r'[Â]', '', tag.text.strip())
                 if match_type is not None and prize is not None:
                     prize_breakdown[match_type] = prize
                     match_type = None

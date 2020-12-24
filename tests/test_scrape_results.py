@@ -7,7 +7,7 @@ from manager.scrape_results import scrape_historical_results, extract_draw_resul
 
 
 def read_html(file_name):
-    with open(f'./resource/{file_name}.html') as html:
+    with open(f'./tests/resource/{file_name}.html') as html:
         page = html.read()
     return page
 
@@ -66,9 +66,9 @@ def test_scrape_prize_breakdown():
     breakdown = scrape_prize_breakdown(base_url='', draw_number=1381)
 
     expected_breakdown = {
-        'Match 5 + 2 Stars': "Â£0.00",
-        'Match 5 + 1 Star': "Â£51,956.30",
-        'Match 5': "Â£7,727.40"
+        'Match 5 + 2 Stars': "£0.00",
+        'Match 5 + 1 Star': "£51,956.30",
+        'Match 5': "£7,727.40"
     }
 
     assert breakdown == expected_breakdown
