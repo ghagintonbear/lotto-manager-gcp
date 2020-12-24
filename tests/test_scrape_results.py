@@ -66,9 +66,9 @@ def test_scrape_prize_breakdown():
     breakdown = scrape_prize_breakdown(base_url='', draw_number=1381)
 
     expected_breakdown = {
-        'Match 5 + 2 Stars': "Â£0.00",
-        'Match 5 + 1 Star': "Â£51,956.30",
-        'Match 5': "Â£7,727.40"
+        'Match 5 + 2 Stars': "£0.00",
+        'Match 5 + 1 Star': "£51,956.30",
+        'Match 5': "£7,727.40"
     }
 
     assert breakdown == expected_breakdown
