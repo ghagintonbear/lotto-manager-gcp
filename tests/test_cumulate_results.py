@@ -4,7 +4,7 @@ from pytest import fixture
 from pandas.testing import assert_frame_equal
 
 from manager.cumulate_results import (
-    calculate_general_overview_row, calculate_player_prize_breakdown, compute_cumulated_result
+    calculate_general_overview_row, calculate_player_prize_breakdown, compute_cumulated_result, currency_to_int
 )
 
 
@@ -15,7 +15,7 @@ def result_data():
     return pd.DataFrame({
         'Name': ['Johnson', 'Baby', 'Shampoo'],
         'Match Type': ['Match 1', 'Match 3 + 2 Stars', 'Jackpot'],
-        'Prize': ["£0.00", "£6.99", "£1,000,00"]
+        'Prize': ["£0.00", "£6.99", "£1,000,00.00"]
     })
 
 
@@ -30,14 +30,13 @@ def play_interval():
 
 
 def test_calculate_general_overview_row_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[£,]', '').astype(float)
-
+    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
     expected = {
         'Interval': [play_interval],
         'Play Date': [play_date],
         'Winnings': [100006.99],
         'Num of Players': [3],
-        'Winning per Person': [33335.66333333334],
+        'Winning per Person': [10000699 / (3 * 100)],
         'Winning Description': ['Match 3 + 2 Stars; Jackpot'],
     }
 
@@ -47,7 +46,7 @@ def test_calculate_general_overview_row_empty_store(result_data, play_interval, 
 
 
 def test_calculate_general_overview_row_non_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[£,]', '').astype(float)
+    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
     pre_store = {
         'Interval': ['Interval_b'],
         'Play Date': ['Fri 99 Aug 2027'],
@@ -62,7 +61,7 @@ def test_calculate_general_overview_row_non_empty_store(result_data, play_interv
         'Play Date': ['Fri 99 Aug 2027', play_date],
         'Winnings': [0.99, 100006.99],
         'Num of Players': [10, 3],
-        'Winning per Person': [0.33, 33335.66333333334],
+        'Winning per Person': [0.33, 10000699 / (3 * 100)],
         'Winning Description': ['', 'Match 3 + 2 Stars; Jackpot'],
     }
 
@@ -72,15 +71,15 @@ def test_calculate_general_overview_row_non_empty_store(result_data, play_interv
 
 
 def test_calculate_player_prize_breakdown_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[£,]', '').astype(float)
+    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
 
     expected = {
         'players': {'Johnson', 'Baby', 'Shampoo'},
         'Interval': [play_interval],
         'Play Date': [play_date],
-        'Johnson': [33335.66333333334],
-        'Baby': [33335.66333333334],
-        'Shampoo': [33335.66333333334]
+        'Johnson': [10000699 / (3 * 100)],
+        'Baby': [10000699 / (3 * 100)],
+        'Shampoo': [10000699 / (3 * 100)]
     }
 
     outcome = calculate_player_prize_breakdown(result_data, {}, play_interval, play_date)
@@ -89,7 +88,7 @@ def test_calculate_player_prize_breakdown_empty_store(result_data, play_interval
 
 
 def test_calculate_player_prize_breakdown_non_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[£,]', '').astype(float)
+    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
 
     pre_store = {
         'players': {'Johnson', 'Baby', 'Kenny', 'Guido'},
@@ -105,9 +104,9 @@ def test_calculate_player_prize_breakdown_non_empty_store(result_data, play_inte
         'players': {'Johnson', 'Baby', 'Shampoo', 'Kenny', 'Guido'},
         'Interval': ['Interval_b', 'Interval_c', play_interval],
         'Play Date': ['play_date_1', 'play_date_2', play_date],
-        'Johnson': [10, 12.56, 33335.66333333334],
-        'Baby': [10, 12.56, 33335.66333333334],
-        'Shampoo': [None, None, 33335.66333333334],
+        'Johnson': [10, 12.56, 10000699 / (3 * 100)],
+        'Baby': [10, 12.56, 10000699 / (3 * 100)],
+        'Shampoo': [None, None, 10000699 / (3 * 100)],
         'Kenny': [10, 12.56, None],
         'Guido': [10, 12.56, None]
     }
@@ -141,7 +140,7 @@ def test_compute_cumulated_result(result_data):
         'Play Date': ['date_1', 'date_2', 'date_3'],
         'Winnings': [100006.99, 3.0, 0],
         'Num of Players': [3, 3, 3],
-        'Winning per Person': [33335.66333333334, 1.0, 0],
+        'Winning per Person': [10000699 / (3 * 100), 1.0, 0],
         'Winning Description': ['Match 3 + 2 Stars; Jackpot', 'Match 3; Match 2', ''],
     })
 
@@ -161,3 +160,14 @@ def test_compute_cumulated_result(result_data):
                            expected_overview[expected_overview.columns.sort_values()])
         assert_frame_equal(breakdown[breakdown.columns.sort_values()],
                            expected_breakdown[expected_breakdown.columns.sort_values()])
+
+
+def test_currency_to_int():
+    from pandas import Series
+    from pandas.testing import assert_series_equal
+
+    currency = Series(["£0.00", "£6.99", "£1,000,00.00", "'Â£9,9..9 9", "£%^$\"£535.34£$£%£$"])
+
+    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int32')
+
+    assert_series_equal(currency_to_int(currency), expected)
