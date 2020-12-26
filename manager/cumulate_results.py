@@ -37,7 +37,7 @@ def calculate_general_overview_row(data: pd.DataFrame, store: dict, play_interva
     """
     store['Interval'] = store.get('Interval', []) + [play_interval]
     store['Play Date'] = store.get('Play Date', []) + [play_date]
-    store['Winnings'] = store.get('Winnings', []) + [data['Prize'].sum() / 100]
+    store['Winnings'] = store.get('Winnings', []) + [data['Prize'].sum() / 100]  # back to float
     store['Num of Players'] = store.get('Num of Players', []) + [data.shape[0]]
     store['Winning per Person'] = store.get('Winning per Person', []) + [
         data['Prize'].sum() / (store['Num of Players'][-1] * 100)
@@ -66,7 +66,7 @@ def calculate_player_prize_breakdown(data: pd.DataFrame, store: dict, play_inter
             store[player] = store.get(player, []) + [None] * (expected_length - current_length)
 
         if player in data['Name'].values:
-            value = data['Prize'].sum()/(data.shape[0] * 100)
+            value = data['Prize'].sum()/(data.shape[0] * 100)  # back to float
         else:
             value = None
 
@@ -76,4 +76,5 @@ def calculate_player_prize_breakdown(data: pd.DataFrame, store: dict, play_inter
 
 
 def currency_to_int(currency: pd.Series) -> pd.Series:
+    """ removes all non digit characters. Moved to func to test."""
     return currency.str.replace(r'[\D]', '').astype(int)

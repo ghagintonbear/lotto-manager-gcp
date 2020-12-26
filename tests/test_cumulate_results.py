@@ -29,8 +29,20 @@ def play_interval():
     return 'Interval_a'
 
 
+def test_currency_to_int():
+    from pandas import Series
+    from pandas.testing import assert_series_equal
+
+    currency = Series(["£0.00", "£6.99", "£1,000,00.00", "'Â£9,9..9 9", "£%^$\"£535.34£$£%£$"])
+
+    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int32')
+
+    assert_series_equal(currency_to_int(currency), expected)
+
+
 def test_calculate_general_overview_row_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
+    result_data['Prize'] = currency_to_int(result_data['Prize'])
+
     expected = {
         'Interval': [play_interval],
         'Play Date': [play_date],
@@ -46,7 +58,7 @@ def test_calculate_general_overview_row_empty_store(result_data, play_interval, 
 
 
 def test_calculate_general_overview_row_non_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
+    result_data['Prize'] = currency_to_int(result_data['Prize'])
     pre_store = {
         'Interval': ['Interval_b'],
         'Play Date': ['Fri 99 Aug 2027'],
@@ -71,7 +83,7 @@ def test_calculate_general_overview_row_non_empty_store(result_data, play_interv
 
 
 def test_calculate_player_prize_breakdown_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
+    result_data['Prize'] = currency_to_int(result_data['Prize'])
 
     expected = {
         'players': {'Johnson', 'Baby', 'Shampoo'},
@@ -88,7 +100,7 @@ def test_calculate_player_prize_breakdown_empty_store(result_data, play_interval
 
 
 def test_calculate_player_prize_breakdown_non_empty_store(result_data, play_interval, play_date):
-    result_data['Prize'] = result_data['Prize'].str.replace(r'[\D]+', '').astype(int)
+    result_data['Prize'] = currency_to_int(result_data['Prize'])
 
     pre_store = {
         'players': {'Johnson', 'Baby', 'Kenny', 'Guido'},
@@ -160,14 +172,3 @@ def test_compute_cumulated_result(result_data):
                            expected_overview[expected_overview.columns.sort_values()])
         assert_frame_equal(breakdown[breakdown.columns.sort_values()],
                            expected_breakdown[expected_breakdown.columns.sort_values()])
-
-
-def test_currency_to_int():
-    from pandas import Series
-    from pandas.testing import assert_series_equal
-
-    currency = Series(["£0.00", "£6.99", "£1,000,00.00", "'Â£9,9..9 9", "£%^$\"£535.34£$£%£$"])
-
-    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int32')
-
-    assert_series_equal(currency_to_int(currency), expected)
