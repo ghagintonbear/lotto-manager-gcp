@@ -77,4 +77,4 @@ def calculate_player_prize_breakdown(data: pd.DataFrame, store: dict, play_inter
 
 def currency_to_int(currency: pd.Series) -> pd.Series:
     """ removes all non digit characters. Moved to func to test."""
-    return currency.str.replace(r'[\D]', '').astype(int)
+    return currency.str.replace(r'[\D]', '').astype('int64')

@@ -35,7 +35,7 @@ def test_currency_to_int():
 
     currency = Series(["£0.00", "£6.99", "£1,000,00.00", "'Â£9,9..9 9", "£%^$\"£535.34£$£%£$"])
 
-    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int32')
+    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int64')
 
     assert_series_equal(currency_to_int(currency), expected)
 
