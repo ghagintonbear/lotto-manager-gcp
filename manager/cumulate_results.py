@@ -40,7 +40,7 @@ def calculate_general_overview_row(data: pd.DataFrame, store: dict, play_interva
     store['Winnings'] = store.get('Winnings', []) + [data['Prize'].sum() / 100]  # back to float
     store['Num of Players'] = store.get('Num of Players', []) + [data.shape[0]]
     store['Winning per Person'] = store.get('Winning per Person', []) + [
-        data['Prize'].sum() / (store['Num of Players'][-1] * 100)
+        data['Prize'].sum() / (store['Num of Players'][-1] * 100)  # back to float
     ]
     store['Winning Description'] = store.get('Winning Description', []) + [
         data[data['Prize'] > 0]['Match Type'].str.cat(sep='; ')
