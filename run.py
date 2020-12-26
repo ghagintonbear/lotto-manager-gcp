@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # run_manager(base_url, selected_numbers)
     # run_manager_between(base_url, selected_numbers, date(2020, 6, 27), date(2020, 12, 20))
 
-    # run_manager_between(base_url, selected_numbers, date(2020, 6, 27), date(2020, 10, 20))
+    # run_manager_between(base_url, selected_numbers, date(2020, 7, 5), date(2020, 10, 20))
     # selected_numbers = selected_numbers[selected_numbers['Name'] != 'Ole']
     # run_manager_between(base_url, selected_numbers, date(2020, 10, 24), date(2020, 12, 20))
 

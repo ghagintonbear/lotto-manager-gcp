@@ -11,7 +11,7 @@ def compute_cumulated_result(path_to_results='.\\result_archive\\*\\*.xlsx'):
         _, play_interval, filename = xlsx_file_path.rsplit('\\', maxsplit=2)
         play_date = filename.rsplit('.', maxsplit=1)[0]
         result = pd.read_excel(xlsx_file_path, sheet_name='Result', engine='openpyxl')
-        result['Prize'] = result['Prize'].str.replace(r'[£,]', '').astype(float)
+        result['Prize'] = currency_to_int(result['Prize'])
 
         general_overview = calculate_general_overview_row(
             data=result, store=general_overview, play_interval=play_interval, play_date=play_date
@@ -37,10 +37,10 @@ def calculate_general_overview_row(data: pd.DataFrame, store: dict, play_interva
     """
     store['Interval'] = store.get('Interval', []) + [play_interval]
     store['Play Date'] = store.get('Play Date', []) + [play_date]
-    store['Winnings'] = store.get('Winnings', []) + [data['Prize'].sum()]
+    store['Winnings'] = store.get('Winnings', []) + [data['Prize'].sum() / 100]  # back to float
     store['Num of Players'] = store.get('Num of Players', []) + [data.shape[0]]
     store['Winning per Person'] = store.get('Winning per Person', []) + [
-        store['Winnings'][-1] / store['Num of Players'][-1]
+        data['Prize'].sum() / (store['Num of Players'][-1] * 100)  # back to float
     ]
     store['Winning Description'] = store.get('Winning Description', []) + [
         data[data['Prize'] > 0]['Match Type'].str.cat(sep='; ')
@@ -66,10 +66,15 @@ def calculate_player_prize_breakdown(data: pd.DataFrame, store: dict, play_inter
             store[player] = store.get(player, []) + [None] * (expected_length - current_length)
 
         if player in data['Name'].values:
-            value = data['Prize'].sum()/data.shape[0]
+            value = data['Prize'].sum()/(data.shape[0] * 100)  # back to float
         else:
             value = None
 
         store[player] = store.get(player, []) + [value]
 
     return store
+
+
+def currency_to_int(currency: pd.Series) -> pd.Series:
+    """ removes all non digit characters. Moved to func to test."""
+    return currency.str.replace(r'[\D]', '').astype('int64')
