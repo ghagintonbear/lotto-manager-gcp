@@ -25,7 +25,8 @@ def compute_cumulated_result(path_to_results='.\\result_archive\\*\\*.xlsx'):
 
     player_prize_breakdown.pop('players')  # side effect of calculate_player_prize_breakdown
 
-    return pd.DataFrame(general_overview), pd.DataFrame(player_prize_breakdown)
+    return (pd.DataFrame(general_overview).sort_values(by=['Interval', 'Play Date']),
+            pd.DataFrame(player_prize_breakdown).sort_values(by=['Interval', 'Play Date']))
 
 
 def calculate_general_overview_row(data: pd.DataFrame, store: dict, play_interval: str, play_date: str) -> dict:
@@ -68,7 +69,7 @@ def calculate_player_prize_breakdown(data: pd.DataFrame, store: dict, play_inter
             store[player] = store.get(player, []) + [None] * (expected_length - current_length)
 
         if player in data['Name'].values:
-            value = data['Prize'].sum()/(data.shape[0] * 100)  # back to float
+            value = data['Prize'].sum() / (data.shape[0] * 100)  # back to float
         else:
             value = None
 

@@ -51,7 +51,7 @@ def produce_cumulative_report():
 
     general_overview, player_breakdown = compute_cumulated_result()
 
-    player_summary = player_breakdown.groupby('Interval', as_index=False).sum()
+    player_summary = player_breakdown.groupby('Interval', as_index=False).sum().sort_values(by='Interval')
     player_summary = add_sum_row('Interval', player_summary)
 
     write_cumulative_result(

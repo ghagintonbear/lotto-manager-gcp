@@ -60,7 +60,7 @@ def tidy_workbook(workbook: Workbook):
         them by: aligning values and ensuring column with is wide enough for given values."""
     desired_alignment = Alignment(horizontal="center", vertical="center")
     for name in workbook.sheetnames:
-        sheet = workbook.get_sheet_by_name(name)
+        sheet = workbook[name]
         for column_cells in sheet.columns:
             desired_length = sheet.column_dimensions[column_cells[0].column_letter].width
             for cell in column_cells:
