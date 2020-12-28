@@ -60,7 +60,8 @@ def produce_cumulative_report():
         'General Overview': (general_overview, ['Winnings', 'Winning per Person'])
     })
 
-    os.startfile(os.path.abspath('./Master Results.xlsx'))
+    if os.name == 'nt':
+        os.startfile(os.path.abspath('./Master Results.xlsx'))
 
 
 def run_manager_with_gui():
