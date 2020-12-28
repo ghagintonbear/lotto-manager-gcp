@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from manager.tools import (
-    get_last_friday_date, get_folder_name, get_selected_numbers, assert_values_in_range
+    get_last_friday_date, get_folder_name, get_selected_numbers, assert_values_in_range, currency_to_int
 )
 
 
@@ -97,3 +97,14 @@ def test_get_selected_numbers_valid_run(selected_dataframe):
     selected_dataframe.iloc[0, 0] = 'Bounty'
     with mock.patch('pandas.read_excel', mock.MagicMock(return_value=selected_dataframe)):
         assert get_selected_numbers().equals(selected_dataframe)
+
+
+def test_currency_to_int():
+    from pandas import Series
+    from pandas.testing import assert_series_equal
+
+    currency = Series(["£0.00", "£6.99", "£1,000,00.00", "'Â£9,9..9 9", "£%^$\"£535.34£$£%£$"])
+
+    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int64')
+
+    assert_series_equal(currency_to_int(currency), expected)

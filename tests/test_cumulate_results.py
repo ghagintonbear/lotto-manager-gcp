@@ -3,8 +3,9 @@ from unittest.mock import patch, MagicMock
 from pytest import fixture
 from pandas.testing import assert_frame_equal
 
+from manager.tools import currency_to_int
 from manager.cumulate_results import (
-    calculate_general_overview_row, calculate_player_prize_breakdown, compute_cumulated_result, currency_to_int
+    calculate_general_overview_row, calculate_player_prize_breakdown, compute_cumulated_result
 )
 
 
@@ -27,17 +28,6 @@ def play_date():
 @fixture
 def play_interval():
     return 'Interval_a'
-
-
-def test_currency_to_int():
-    from pandas import Series
-    from pandas.testing import assert_series_equal
-
-    currency = Series(["£0.00", "£6.99", "£1,000,00.00", "'Â£9,9..9 9", "£%^$\"£535.34£$£%£$"])
-
-    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int64')
-
-    assert_series_equal(currency_to_int(currency), expected)
 
 
 def test_calculate_general_overview_row_empty_store(result_data, play_interval, play_date):
