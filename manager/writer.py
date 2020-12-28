@@ -5,7 +5,7 @@ from openpyxl.styles import Alignment
 import pandas as pd
 
 
-def write_cumulative_result(frames: dict):
+def write_cumulative_result(frames: dict, save_path: str):
     """ writes out summary frames received for all results to Master Results.xlsx """
     workbook = Workbook()
     workbook.remove(workbook.active)
@@ -18,7 +18,7 @@ def write_cumulative_result(frames: dict):
         columns_to_currency(sheets[name], currency_cols)
 
     tidy_workbook(workbook)
-    workbook.save('./Master Results.xlsx')
+    workbook.save(save_path)
 
 
 def write_result(folder_path: str, file_name: str, result: pd.DataFrame, draw_result: dict, prize_breakdown: dict):

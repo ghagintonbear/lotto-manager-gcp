@@ -3,7 +3,7 @@ from datetime import date
 
 from pytest import fixture, raises
 
-from manager.scrape_results import scrape_historical_results, extract_draw_result, scrape_prize_breakdown
+from manager.scrape_results import scrape_historical_results, extract_draw_result, scrape_prize_breakdown, BASE_URL
 
 
 def read_html(file_name):
@@ -17,13 +17,13 @@ def mock_request_get(url):
         def __init__(self, content):
             self.content = content
 
-    if url == '/results/euromillions/draw-history':
+    if url == BASE_URL + '/results/euromillions/draw-history':
         response_content = read_html('draw_history')
-    elif url == '/results/euromillions/draw-history/prize-breakdown/1381':
+    elif url == BASE_URL + '/results/euromillions/draw-history/prize-breakdown/1381':
         response_content = read_html('prize_breakdown')
-    elif url == 'wrong-page/results/euromillions/draw-history':
+    elif url == BASE_URL + '/wrong-page/results/euromillions/draw-history':
         response_content = read_html('prize_breakdown')
-    elif url == 'not-csv/results/euromillions/draw-history':
+    elif url == BASE_URL + '/not-csv/results/euromillions/draw-history':
         response_content = read_html('draw_history_wrong_csv_link')
     else:
         response_content = 'wrong-link'
@@ -32,7 +32,7 @@ def mock_request_get(url):
 
 
 def mock_read_csv(url):
-    if url == '/results/euromillions/draw-history/csv':
+    if url == BASE_URL + '/results/euromillions/draw-history/csv':
         return 'success'
     else:
         return 'failed'
@@ -42,28 +42,28 @@ def mock_read_csv(url):
 def test_scrape_historical_results_raise_attribute_error():
 
     with raises(AttributeError, match="'NoneType' object has no attribute 'get'"):
-        scrape_historical_results(base_url='wrong-page')
+        scrape_historical_results('/wrong-page/results/euromillions/draw-history')
 
 
 @patch('requests.get', mock_request_get)
 def test_scrape_historical_results_raise_value_error():
 
     with raises(ValueError, match="Can't find csv at this link:.*"):
-        scrape_historical_results(base_url='not-csv')
+        scrape_historical_results('/not-csv/results/euromillions/draw-history')
 
 
 @patch('pandas.read_csv', mock_read_csv)
 @patch('requests.get', mock_request_get)
 def test_scrape_historical_results():
 
-    historical_results = scrape_historical_results(base_url='')
+    historical_results = scrape_historical_results()
 
     assert historical_results == 'success'
 
 
 @patch('requests.get', mock_request_get)
 def test_scrape_prize_breakdown():
-    breakdown = scrape_prize_breakdown(base_url='', draw_number=1381)
+    breakdown = scrape_prize_breakdown(draw_number=1381)
 
     expected_breakdown = {
         'Match 5 + 2 Stars': "£0.00",
