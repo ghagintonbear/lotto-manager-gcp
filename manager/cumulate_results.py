@@ -2,6 +2,8 @@ import glob
 
 import pandas as pd
 
+from manager.tools import currency_to_int
+
 
 def compute_cumulated_result(path_to_results='.\\result_archive\\*\\*.xlsx'):
     """ Iterates over all .xlsx files in results_archive to produce bespoke summary tables requested by user. """
@@ -73,8 +75,3 @@ def calculate_player_prize_breakdown(data: pd.DataFrame, store: dict, play_inter
         store[player] = store.get(player, []) + [value]
 
     return store
-
-
-def currency_to_int(currency: pd.Series) -> pd.Series:
-    """ removes all non digit characters. Moved to func to test."""
-    return currency.str.replace(r'[\D]', '').astype('int64')

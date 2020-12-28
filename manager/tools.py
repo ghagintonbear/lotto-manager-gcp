@@ -26,6 +26,7 @@ def get_folder_name(selected_date: date) -> str:
     `date_range_start(end)` provided by user.
     if selected_date > end_range then it goes in the folder that starts there.
     """
+
     def date_to_str(a_date: date) -> str: return f"{a_date:%Y-%m-%d}"
 
     date_range_start = date(2020, 1, 10)
@@ -92,6 +93,11 @@ def assert_values_in_range(data: pd.DataFrame, start: int, end: int, cols: list)
     for col in cols:
         if not pd.api.types.is_numeric_dtype(data[col]):
             raise TypeError(f'data["{col}"] is not numeric.')
-    mask = data[cols].isin(range(start, end+1)).all(axis=1)
+    mask = data[cols].isin(range(start, end + 1)).all(axis=1)
     if not mask.all():
         raise ValueError(f'The following data are not between [{start}, {end}] inclusive:\n{data[~mask]}')
+
+
+def currency_to_int(currency: pd.Series) -> pd.Series:
+    """ removes all non digit characters. Moved to func to test."""
+    return currency.str.replace(r'[\D]', '').astype('int64')
