@@ -1,5 +1,6 @@
+import re
 from datetime import datetime
-from tkinter import Tk, Frame, Label, Button, Canvas, Scrollbar, LEFT, messagebox, Entry
+from tkinter import Tk, Frame, Label, Button, Canvas, Scrollbar, LEFT, messagebox
 from tkinter.ttk import Notebook
 
 from tkcalendar import Calendar
@@ -16,20 +17,18 @@ def run_gui(run_day_fn, run_between_fn, cumulative_report_fn):
 
     run_day_frame = Frame(notebook)
     run_day_frame.configure(bg='#335C67')
-    run_day_log_label = _make_run_gui(run_day_frame, run_day_fn, cumulative_report_fn)
+    _make_run_gui(run_day_frame, run_day_fn, cumulative_report_fn)
     notebook.add(run_day_frame, text='Run Day')
 
     # Run between tab
     run_between_frame = Frame(notebook)
     run_between_frame.configure(bg='#335C67')
-    run_between_log_label = _make_run_gui(run_between_frame, run_between_fn, cumulative_report_fn, run_between=True)
+    _make_run_gui(run_between_frame, run_between_fn, cumulative_report_fn, run_between=True)
     notebook.add(run_between_frame, text='Run Between')
 
     notebook.pack(expand=1, fill="both")
 
     window.mainloop()
-
-    return run_day_log_label, run_between_log_label
 
 
 def _make_run_gui(frame, run_manager_fn, cumulative_report_fn, run_between=False):
@@ -78,7 +77,7 @@ def _add_label_button_date_select(frame, calendar, label_text, label_row, label_
 
     button = Button(frame,
                     text=f"Select {label_text}",
-                    command=lambda: _grab_date(label, calendar, label_text),
+                    command=lambda: _grab_date_from_calendar(label, calendar, label_text),
                     font=font, bg='#E9C46A')
 
     button.grid(column=label_col, row=label_row + 1, pady=padding)
@@ -86,7 +85,7 @@ def _add_label_button_date_select(frame, calendar, label_text, label_row, label_
     return label
 
 
-def _grab_date(label, calendar, text):
+def _grab_date_from_calendar(label, calendar, text):
     label.config(text=f"{text} selected:\n{calendar.selection_get():%d/%m/%Y}")
 
 
@@ -116,7 +115,7 @@ def _make_scrolling_label_log(frame):
 
 
 def _get_date_from_label(label):
-    return datetime.strptime(label.cget("text").split(':\n')[-1].strip(), '%d/%m/%Y').date()
+    return datetime.strptime(re.search(r'(\d{2}/\d{2}/\d{4})', label.cget('text'))[0], '%d/%m/%Y').date()
 
 
 def update_label_log(label, draw_date, winning_numbers, folder_path, prize_col):
