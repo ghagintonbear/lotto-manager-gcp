@@ -1,4 +1,5 @@
-from datetime import date, datetime
+import os
+from datetime import date
 
 import pandas as pd
 
@@ -9,20 +10,28 @@ from manager.cumulate_results import compute_cumulated_result
 from manager.tools import (
     get_last_friday_date, get_folder_name, make_results_folder, add_sum_row, get_selected_numbers
 )
+from manager.gui import run_gui, update_label_log
 
 
-def run_manager(base_url: str, selected: pd.DataFrame, run_date: date = datetime.now().date()):
+BASE_URL = 'https://www.national-lottery.co.uk'
+
+
+def run_manager(run_date: date, label):
+    selected = get_selected_numbers()
+
     draw_date, draw_date_str = get_last_friday_date(run_date)
     folder_name = get_folder_name(draw_date)
     folder_path = make_results_folder(folder_name)
 
-    draw_result, prize_breakdown = get_draw_information(base_url, draw_date)
+    draw_result, prize_breakdown = get_draw_information(BASE_URL, draw_date)
     winning_numbers = collect_winning_numbers(draw_result)
 
     results = check_matches_on_selected(selected, winning_numbers, prize_breakdown)
 
     write_result(folder_path=folder_path, file_name=draw_date_str, result=results,
                  draw_result=draw_result, prize_breakdown=prize_breakdown)
+
+    update_label_log(label, draw_date_str, winning_numbers, folder_path, prize_col=results['Prize'])
 
     return results
 
@@ -34,9 +43,9 @@ def get_draw_information(base_url: str, draw_date: date) -> (dict, dict):
     return draw_result, prize_breakdown
 
 
-def run_manager_between(base_url: str, selected: pd.DataFrame, start: date, end: date, freq: str = '7D'):
-    for run_date in pd.date_range(start, end, freq=freq):
-        run_manager(base_url, selected, run_date)
+def run_manager_between(start: date, end: date, label):
+    for run_date in pd.date_range(start, end, freq='7D'):
+        run_manager(run_date, label)
 
 
 def produce_cumulative_report():
@@ -50,3 +59,13 @@ def produce_cumulative_report():
         'Player Breakdown': (player_breakdown, player_breakdown.dtypes[player_breakdown.dtypes != 'object'].index),
         'General Overview': (general_overview, ['Winnings', 'Winning per Person'])
     })
+
+    os.startfile(os.path.abspath('./Master Results.xlsx'))
+
+
+def run_manager_with_gui():
+    run_gui(
+        run_day_fn=run_manager,
+        run_between_fn=run_manager_between,
+        cumulative_report_fn=produce_cumulative_report
+    )
