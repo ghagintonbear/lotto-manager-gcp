@@ -1,5 +1,6 @@
 import os
 from datetime import date
+from tkinter import Label
 
 import pandas as pd
 
@@ -13,7 +14,7 @@ from manager.tools import (
 from manager.gui import run_gui, update_label_log
 
 
-def run_manager(run_date: date, label):
+def run_manager(run_date: date, label: Label):
     selected = get_selected_numbers()
 
     draw_date, draw_date_str = get_last_friday_date(run_date)
@@ -40,7 +41,7 @@ def get_draw_information(draw_date: date) -> (dict, dict):
     return draw_result, prize_breakdown
 
 
-def run_manager_between(start: date, end: date, label):
+def run_manager_between(start: date, end: date, label: Label):
     for run_date in pd.date_range(start, end, freq='7D'):
         run_manager(run_date, label)
 
