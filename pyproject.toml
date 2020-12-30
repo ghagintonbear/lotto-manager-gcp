@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "lotto-manager"
+name = "lotto-manager-gcp"
 version = "0.1.0"
 description = ""
 authors = ["ghagintonbear"]
@@ -10,7 +10,6 @@ pandas = "^1.1.5"
 requests = "^2.25.0"
 beautifulsoup4 = "^4.9.3"
 openpyxl = "^3.0.5"
-tkcalendar = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.0"
