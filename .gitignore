@@ -1,6 +1,4 @@
 .pytest_cache
 __pycache__
 .idea
-result_archive
 poetry.lock
-Master Results.xlsx

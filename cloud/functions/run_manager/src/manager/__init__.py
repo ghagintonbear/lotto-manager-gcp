@@ -1,6 +1,5 @@
 import os
 from datetime import date
-from tkinter import Label
 
 import pandas as pd
 
@@ -8,13 +7,10 @@ from manager.scrape_results import scrape_historical_results, extract_draw_resul
 from manager.check_matches import collect_winning_numbers, check_matches_on_selected
 from manager.writer import write_result, write_cumulative_result
 from manager.cumulate_results import compute_cumulated_result
-from manager.tools import (
-    get_last_friday_date, get_folder_name, make_results_folder, add_sum_row, get_selected_numbers
-)
-from manager.gui import run_gui, update_label_log
+from manager.tools import get_last_friday_date, get_folder_name, make_results_folder, add_sum_row, get_selected_numbers
 
 
-def run_manager(run_date: date, label: Label):
+def run_manager(run_date: date):
     selected = get_selected_numbers()
 
     draw_date, draw_date_str = get_last_friday_date(run_date)
@@ -29,8 +25,6 @@ def run_manager(run_date: date, label: Label):
     write_result(folder_path=folder_path, file_name=draw_date_str, result=results,
                  draw_result=draw_result, prize_breakdown=prize_breakdown)
 
-    update_label_log(label, draw_date_str, winning_numbers, folder_path, prize_col=results['Prize'])
-
     return results
 
 
@@ -41,9 +35,9 @@ def get_draw_information(draw_date: date) -> (dict, dict):
     return draw_result, prize_breakdown
 
 
-def run_manager_between(start: date, end: date, label: Label):
+def run_manager_between(start: date, end: date):
     for run_date in pd.date_range(start, end, freq='7D'):
-        run_manager(run_date, label)
+        run_manager(run_date)
 
 
 def produce_cumulative_report():
@@ -65,11 +59,3 @@ def produce_cumulative_report():
 
     if os.name == 'nt':
         os.startfile(os.path.abspath(file_path))
-
-
-def run_manager_with_gui():
-    run_gui(
-        run_day_fn=run_manager,
-        run_between_fn=run_manager_between,
-        cumulative_report_fn=produce_cumulative_report
-    )
