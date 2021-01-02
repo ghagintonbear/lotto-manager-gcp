@@ -46,6 +46,7 @@ def get_folder_name(selected_date: date) -> str:
 
 
 def make_results_folder(folder_name: str) -> str:
+    # TODO: GCP Bucket read
     """
     makes sure appropriate directories exist to store generated results.
     """
@@ -68,6 +69,7 @@ def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_selected_numbers(path: str = './Selected Numbers.xlsx'):
+    # TODO: GCP Bucket read
     """ validates Selected Numbers.xlsx. Ensures numbers selected are valid and there are no duplicates in Name col."""
     selected = pd.read_excel(path, engine='openpyxl')
 

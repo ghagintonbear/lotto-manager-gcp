@@ -3,8 +3,8 @@ from unittest.mock import patch, MagicMock
 from pytest import fixture
 from pandas.testing import assert_frame_equal
 
-from cloud.functions.run_manager.src.manager import currency_to_int
-from cloud.functions.run_manager.src.manager import (
+from manager.tools import currency_to_int
+from manager.cumulate_results import (
     calculate_general_overview_row, calculate_player_prize_breakdown, compute_cumulated_result
 )
 

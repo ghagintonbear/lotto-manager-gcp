@@ -6,6 +6,7 @@ import pandas as pd
 
 
 def write_cumulative_result(frames: dict, save_path: str):
+    # TODO: GCP Bucket write
     """ writes out summary frames received for all results to Master Results.xlsx """
     workbook = Workbook()
     workbook.remove(workbook.active)
@@ -22,6 +23,7 @@ def write_cumulative_result(frames: dict, save_path: str):
 
 
 def write_result(folder_path: str, file_name: str, result: pd.DataFrame, draw_result: dict, prize_breakdown: dict):
+    # TODO: GCP Bucket write
     """ writes out result of a given draw. This includes the:
         * draw result - how many matches achieved,
         * draw outcome - balls drawn,

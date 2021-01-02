@@ -3,11 +3,11 @@ from datetime import date
 
 from pytest import fixture, raises
 
-from cloud.functions.run_manager.src.manager import scrape_historical_results, extract_draw_result, scrape_prize_breakdown, BASE_URL
+from manager.scrape_results import scrape_historical_results, extract_draw_result, scrape_prize_breakdown, BASE_URL
 
 
 def read_html(file_name):
-    with open(f'./tests/resource/{file_name}.html') as html:
+    with open(f'../tests/resource/{file_name}.html') as html:
         page = html.read()
     return page
 
