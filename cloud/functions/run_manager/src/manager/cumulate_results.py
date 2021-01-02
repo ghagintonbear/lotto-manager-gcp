@@ -2,7 +2,7 @@ import glob
 
 import pandas as pd
 
-from manager.tools import currency_to_int
+from cloud.functions.run_manager.src.manager import currency_to_int
 
 
 def compute_cumulated_result(path_to_results='.\\result_archive\\*\\*.xlsx'):

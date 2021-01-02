@@ -4,14 +4,14 @@ from tkinter import Label
 
 import pandas as pd
 
-from manager.scrape_results import scrape_historical_results, extract_draw_result, scrape_prize_breakdown
-from manager.check_matches import collect_winning_numbers, check_matches_on_selected
-from manager.writer import write_result, write_cumulative_result
-from manager.cumulate_results import compute_cumulated_result
-from manager.tools import (
+from cloud.functions.run_manager.src.manager import scrape_historical_results, extract_draw_result, scrape_prize_breakdown
+from cloud.functions.run_manager.src.manager import collect_winning_numbers, check_matches_on_selected
+from cloud.functions.run_manager.src.manager import write_result, write_cumulative_result
+from cloud.functions.run_manager.src.manager import compute_cumulated_result
+from cloud.functions.run_manager.src.manager import (
     get_last_friday_date, get_folder_name, make_results_folder, add_sum_row, get_selected_numbers
 )
-from manager.gui import run_gui, update_label_log
+from cloud.functions.run_manager.src.manager import run_gui, update_label_log
 
 
 def run_manager(run_date: date, label: Label):

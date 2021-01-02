@@ -7,7 +7,7 @@ from typing import Callable
 from pandas import Series
 from tkcalendar import Calendar
 
-from manager.tools import currency_to_int
+from cloud.functions.run_manager.src.manager import currency_to_int
 
 
 def run_gui(run_day_fn: Callable, run_between_fn: Callable, cumulative_report_fn: Callable):

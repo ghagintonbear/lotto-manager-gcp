@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from manager.tools import (
+from cloud.functions.run_manager.src.manager import (
     get_last_friday_date, get_folder_name, get_selected_numbers, assert_values_in_range, currency_to_int
 )
 

@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 
-from manager.check_matches import collect_winning_numbers, match_type_label, check_matches_on_selected
+from cloud.functions.run_manager.src.manager import collect_winning_numbers, match_type_label, check_matches_on_selected
 
 
 def test_collect_numbers():
