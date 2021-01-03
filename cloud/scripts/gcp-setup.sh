@@ -50,3 +50,14 @@ echo
 echo "*** STEP 5 Creating buckets ***"
 echo
 gsutil mb -c standard -l ${REGION} gs://${BUCKET_NAME}  # Where results will be stored
+
+
+echo
+echo "*** STEP 6 Creating Cloud Scheduler and Topic ***"
+echo
+# Have to create an app engine app in order to use scheduler
+gcloud app create --project=${PROJECT_ID} --region=${REGION}
+gcloud pubsub topics create scheduled-weekly-9am
+# schedule is crontab format, see: https://crontab.guru/#0_9_*_*_SAT
+gcloud scheduler jobs create pubsub weekly-9am --schedule="0 9 * * SAT"
+    --topic=scheduled-weekly-9am --message-body="Its 9am Saturday, time to work!"
