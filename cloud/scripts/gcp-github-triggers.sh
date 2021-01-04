@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -e # if error exit
 
 if [[ $# -eq 0 ]] ; then
     echo 'You must provide a branch name as the only argument'

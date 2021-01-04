@@ -2,7 +2,7 @@
 set -e # if error exit
 
 if [[ $# -eq 0 ]] ; then
-    echo 'You must provide a branch name as the only argument'
+    echo "You must provide a branch name as the only argument"
     exit 0
 fi
 
