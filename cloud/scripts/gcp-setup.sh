@@ -1,8 +1,13 @@
 #!/bin/bash
 set -e # if error exit
 
+if [[ $# -eq 0 ]] ; then
+    echo 'You must provide a branch name as the only argument'
+    exit 0
+fi
+
 # script variables
-PROJECT_ID="euro-lotto-manager" # Project IDs must be between 6 and 30 characters.
+PROJECT_ID="euro-lotto-manager-$1" # Project IDs must be between 6 and 30 characters.
 REGION="europe-west2"  # europe-west2 is London
 BUCKET_NAME="results-${PROJECT_ID}"
 
@@ -22,32 +27,32 @@ else
 fi
 
 
-echo "*** STEP 1: Requesting for Authentication ***"
+echo "*** STEP 1/9: Requesting for Authentication ***"
 echo
 gcloud auth login
 
 
 echo
-echo "*** STEP 2: Creating Project ***"
+echo "*** STEP 2/9: Creating Project ***"
 echo
 gcloud projects create ${PROJECT_ID}
 
 PROJECT_NUMBER=`gcloud projects list --filter=${PROJECT_ID} --format="value(PROJECT_NUMBER)"`
 
 echo
-echo "*** STEP 3: Link Project to billing account ***"
+echo "*** STEP 3/9: Link Project to billing account ***"
 echo
 gcloud alpha billing projects link ${PROJECT_ID} \
     --billing-account ${BILLING_ACCOUNT_ID}
 
 echo
-echo "*** STEP 4: Selecting Project ***"
+echo "*** STEP 4/9: Selecting Project ***"
 echo
 gcloud config set project ${PROJECT_ID}
 
 
 echo
-echo "*** STEP 5: Enabling GCP APIs ***"
+echo "*** STEP 5/9: Enabling GCP APIs ***"
 echo
 gcloud services enable cloudtrace.googleapis.com            # Cloud Trace API
 gcloud services enable logging.googleapis.com               # Cloud Logging API
@@ -60,19 +65,19 @@ gcloud services enable appengine.googleapis.com             # appengine needed f
 
 
 echo
-echo "*** STEP 6: 60s delay - allow APIs to enable ***"
+echo "*** STEP 6/9: 60s delay - allow APIs to enable ***"
 echo
 sleep 60
 
 
 echo
-echo "*** STEP 7 Creating buckets ***"
+echo "*** STEP 7/9 Creating buckets ***"
 echo
 gsutil mb -c standard -l ${REGION} gs://${BUCKET_NAME}  # Where results will be stored
 
 
 echo
-echo "*** STEP 8 Adding permissions"
+echo "*** STEP 8/9 Adding permissions"
 echo
 # note gcf-admin-robot = Google Cloud Functions Service Agent
 # and PROJECT_ID@appspot.gserviceaccount.com is App engine default service account:
@@ -121,7 +126,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID}@appspot.gserviceaccount.com
 
 
 echo
-echo "*** STEP 9 Creating Cloud Scheduler and Topic ***"
+echo "*** STEP 9/9 Creating Cloud Scheduler and Topic ***"
 echo
 # Have to create an app engine app in order to use scheduler
 gcloud app create --project=${PROJECT_ID} --region=${REGION}

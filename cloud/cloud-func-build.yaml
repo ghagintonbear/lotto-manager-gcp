@@ -1,0 +1,57 @@
+#
+# Format defined in https://cloud.google.com/cloud-build/docs/build-config
+#
+# Automatically substituted variables defined in
+# https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
+#
+steps:
+  - id: 'Run Unit Tests'
+    name: 'python:3.8'  # 3.8 to match same environment as cloud functions execution
+    dir: 'cloud/functions/${_FUNCTION_NAME}'
+    entrypoint: '/bin/bash'
+    #    Arguments are "daisy chained" so "pip install -r" only runs if "pip install pytest" succeeds etc
+    args:
+      - -c
+      - |
+        echo "" \
+        && echo "Python system platform:" \
+        && python -c "import sys; print(sys.platform)" \
+        && echo "" \
+        && echo "Installed python version:" \
+        && python -V \
+        && echo "" \
+        && echo "PROJECT_ID=$PROJECT_ID" \
+        && echo "" \
+        && echo "Base folder:" \
+        && ls -la \
+        && echo "" \
+        && echo "src folder:" \
+        && ls -la src \
+        && echo "" \
+        && echo "tests folder:" \
+        && ls -la tests \
+        && echo "" \
+        && pip install pytest \
+        && pip install -r src/requirements.txt \
+        && cd src \
+        && echo "GCP_PROJECT=$PROJECT_ID python -m pytest -v ../tests" \
+        && GCP_PROJECT=$PROJECT_ID python -m pytest -v ../tests \
+
+  # https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-functions
+  - id: 'Deploy Function'
+    name: 'gcr.io/cloud-builders/gcloud'
+    dir: 'cloud/functions/${_FUNCTION_NAME}'
+    args:
+      - functions
+      - deploy
+      - ${_FUNCTION_NAME}
+      - --source=src
+      - --${_TRIGGER_TYPE}
+      - --${_RUNTIME}
+      - --${_TIMEOUT}
+      - --region=europe-west2
+      - --${_MEMORY}
+      #
+      # Add environment variables that are of interest to any functions;
+      # https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
+      - --set-env-vars=SOURCES_BUCKET_NAME=results-$PROJECT_ID
