@@ -84,13 +84,13 @@ echo
 # See https://cloud.google.com/functions/docs/concepts/iam#access_control_for_service_accounts
 
 echo "Permitting cloud build to deploy functions"
-gcloud projects add-iam-policy-binding ${PROJECT_ID}@appspot.gserviceaccount.com \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member=serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
     --role=roles/cloudfunctions.developer
 
 echo
 echo "Permitting deploy build rule to upload function source code"
-gcloud projects add-iam-policy-binding ${PROJECT_ID}@appspot.gserviceaccount.com \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member=serviceAccount:service-${PROJECT_NUMBER}@gcf-admin-robot.iam.gserviceaccount.com \
     --role=roles/storage.objectCreator
 
@@ -108,19 +108,19 @@ gcloud iam service-accounts add-iam-policy-binding ${PROJECT_ID}@appspot.gservic
 
 echo
 echo "Permitting function service account to invoke other functions"
-gcloud projects add-iam-policy-binding ${PROJECT_ID}@appspot.gserviceaccount.com \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member=serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com  \
     --role=roles/cloudfunctions.invoker
 
 echo
 echo "Permitting function service account to read from storage"
-gcloud projects add-iam-policy-binding ${PROJECT_ID}@appspot.gserviceaccount.com \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member=serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com  \
     --role=roles/storage.objectViewer
 
 echo
 echo "Permitting function service account to write to storage"
-gcloud projects add-iam-policy-binding ${PROJECT_ID}@appspot.gserviceaccount.com \
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member=serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com  \
     --role=roles/storage.objectCreator
 
