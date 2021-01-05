@@ -134,3 +134,33 @@ gcloud pubsub topics create scheduled-weekly-9am
 # schedule is crontab format, see: https://crontab.guru/#0_9_*_*_6
 gcloud scheduler jobs create pubsub weekly-9am --schedule="0 9 * * 6" \
     --topic=scheduled-weekly-9am --message-body="Its 9am Saturday, time to work!"
+
+
+echo
+echo
+echo "********************************************************"
+echo "* You must now connect Google Cloud Build to GitHub"
+echo "*"
+echo "* NOTE: YOU WILL NEED 'Owner' PRIVILEGES ON GITHUB TO DO THIS"
+echo "*"
+echo "* 1. Go to Cloud Build Triggers page and link your repo:"
+echo "*"
+echo "*    https://console.cloud.google.com/cloud-build/triggers"
+echo "*"
+echo "*    Select 'Connect repository'"
+echo "*    Select 'GitHub (Cloud Build GitHub App)'"
+echo "*    Select 'Install Google Cloud Build' if offered, into your GitHub repo"
+echo "*    Select your repository in GCP, and confirm that you understand"
+echo "*      GitHub content will be transferred to GCP, and then 'Connect repository'"
+echo "*    Select 'Connect repository'"
+echo "*"
+echo "*    When offered, do not create any triggers and 'skip for now' as the next"
+echo "*      script will do the work. Select 'continue' to confirm skipping this step."
+echo "*"
+echo "*    You will now see the newly connected repository listed as 'inactive',"
+echo "*      so you are ready to connect the repository by triggers in the next step."
+echo "*"
+echo "* 2. run './gcp-github-triggers.sh $1' to setup CI triggers"
+echo "********************************************************"
+echo
+echo
