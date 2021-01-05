@@ -1,0 +1,4 @@
+trigger-topic=scheduled-weekly-9am
+runtime=python38
+memory=128MB
+timeout=60s
