@@ -23,6 +23,9 @@ def run_manager(event, _context):
 
     draw_result, prize_breakdown = get_draw_information(draw_date)
 
+    print(f'Draw Results: {draw_result}')
+    print(f'Prize Breakdown: {prize_breakdown}')
+
     return draw_result, prize_breakdown
 
 
