@@ -7,7 +7,7 @@ if [[ $# -eq 0 ]] ; then
 fi
 
 
-PROJECT_ID="euro-lotto-manager-$1"  # suffix is branch this project is attached to, is the only arg supplied
+PROJECT_ID="lotto-manager-gcp-$1"  # suffix is branch this project is attached to, is the only arg supplied
 BRANCH_PATTERN="^$1$" # branch name we will match against to launch triggers
 REPO_NAME="lotto-manager-gcp"
 REPO_OWNER="ghagintonbear"
