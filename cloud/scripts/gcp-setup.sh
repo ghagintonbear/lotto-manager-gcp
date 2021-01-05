@@ -7,7 +7,7 @@ if [[ $# -eq 0 ]] ; then
 fi
 
 # script variables
-PROJECT_ID="lotto-manager-gcp-" # Project IDs must be between 6 and 30 characters.
+PROJECT_ID="lotto-manager-gcp-$1" # Project IDs must be between 6 and 30 characters.
 REGION="europe-west2"  # europe-west2 is London
 BUCKET_NAME="results-${PROJECT_ID}"
 
