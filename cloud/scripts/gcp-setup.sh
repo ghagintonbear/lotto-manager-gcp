@@ -62,6 +62,7 @@ gcloud services enable cloudbuild.googleapis.com            # github triggers
 gcloud services enable cloudfunctions.googleapis.com        # cloud functions
 gcloud services enable cloudscheduler.googleapis.com        # cloud scheduler (crontab for cloud)
 gcloud services enable appengine.googleapis.com             # appengine needed for cloud scheduler
+gcloud services enable bigquery.googleapis.com              # BigQuery usage
 
 
 echo
@@ -121,18 +122,6 @@ echo "Permitting function service account to invoke other functions"
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member=serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com  \
     --role=roles/cloudfunctions.invoker
-
-echo
-echo "Permitting function service account to read from storage"
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member=serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com  \
-    --role=roles/storage.objectViewer
-
-echo
-echo "Permitting function service account to write to storage"
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member=serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com  \
-    --role=roles/storage.objectCreator
 
 
 echo
