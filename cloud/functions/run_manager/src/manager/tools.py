@@ -46,7 +46,7 @@ def get_folder_name(selected_date: date) -> str:
 
 
 def make_results_folder(folder_name: str) -> str:
-    # TODO: GCP Bucket read
+    # TODO: GCP Bucket readcheck
     """
     makes sure appropriate directories exist to store generated results.
     """

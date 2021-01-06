@@ -1,25 +1,12 @@
-atomicwrites==1.4.0
-attrs==20.3.0
 beautifulsoup4==4.9.3
 certifi==2020.12.5
 chardet==4.0.0
-colorama==0.4.4
-et-xmlfile==1.0.1
 idna==2.10
-iniconfig==1.1.1
-jdcal==1.4.1
 numpy==1.19.4
-openpyxl==3.0.5
-packaging==20.8
 pandas==1.2.0
-pluggy==0.13.1
-py==1.10.0
-pyparsing==2.4.7
-pytest==6.2.1
 python-dateutil==2.8.1
 pytz==2020.5
 requests==2.25.1
 six==1.15.0
 soupsieve==2.1; python_version >= "3.0"
-toml==0.10.2
 urllib3==1.26.2
