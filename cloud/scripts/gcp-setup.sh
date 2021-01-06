@@ -71,9 +71,19 @@ sleep 60
 
 
 echo
-echo "*** STEP 7/9 Creating buckets ***"
+echo "*** STEP 7a/9 Creating BigQuery Database***"
 echo
-gsutil mb -c standard -l ${REGION} gs://${BUCKET_NAME}  # Where results will be stored
+bq --location=${REGION} --project_id=${PROJECT_ID} mk \
+    --dataset \
+    --description "Selected Numbers" \
+    ${PROJECT_ID}:selected
+
+echo
+echo "*** STEP 7b/9 Creating BigQuery Table using './selected_numbers.csv'***"
+echo
+bq load --autodetect --source_format=CSV \
+    ${PROJECT_ID}:selected.numbers \
+    '../../selected_numbers.csv'
 
 
 echo
