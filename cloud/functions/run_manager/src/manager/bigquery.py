@@ -31,10 +31,9 @@ def read_selected_numbers():
 def write_dictionary_to_bigquery(client: bq.Client, data: dict, col_names: list, table_name: str, dataset_name: str):
 
     data = dict(zip(col_names, [data.keys(), data.values()]))
-    print(data)
     data = pd.DataFrame.from_dict(data, orient='columns')
 
-    write_dataframe_to_bigquery(client, data=data, table_name=table_name, dataset_name=dataset_name)
+    write_dataframe_to_bigquery(client, data=data.astype(str), table_name=table_name, dataset_name=dataset_name)
     return
 
 
