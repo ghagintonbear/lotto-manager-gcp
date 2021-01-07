@@ -5,7 +5,7 @@ import re
 import requests
 from bs4 import BeautifulSoup as bSoup
 import pandas as pd
-# TODO: Env variable?
+
 BASE_URL = 'https://www.national-lottery.co.uk'
 
 
