@@ -53,4 +53,5 @@ steps:
       #
       # Add environment variables that are of interest to any functions;
       # https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
-      - --set-env-vars=SOURCES_BUCKET_NAME=results-$PROJECT_ID
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID
+      - --set-env-vars=REGION=europe-west2

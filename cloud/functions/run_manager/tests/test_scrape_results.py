@@ -104,7 +104,7 @@ def test_extract_draw_result_valid_date(hist_data):
     draw_date = date(2020, 12, 15)
 
     expected_result = {
-        'DrawDate': date(2020, 12, 15), 'Ball 1': 1, 'Ball 2': 3, 'Lucky Star 1': 5,
+        'DrawDate': '2020-12-15-Tue', 'Ball 1': 1, 'Ball 2': 3, 'Lucky Star 1': 5,
         'UK Millionaire Maker': 'alpha', 'DrawNumber': 1966
     }
 

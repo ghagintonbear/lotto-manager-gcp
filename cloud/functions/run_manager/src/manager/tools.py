@@ -1,4 +1,3 @@
-import os
 from datetime import timedelta, date
 
 import pandas as pd
@@ -16,74 +15,13 @@ def get_last_friday_date(run_date: date) -> (date, str):
     else:
         diff = 0
     last_fri = run_date - timedelta(days=diff)
-    last_fri_str = f"Fri {last_fri:%d}" + f" {last_fri:%B}"[0:4] + f" {last_fri:%Y}"
-    return last_fri, last_fri_str
-
-
-def get_folder_name(selected_date: date) -> str:
-    """
-    organise generated results into date range folders within ../results_archive.
-    `date_range_start(end)` provided by user.
-    if selected_date > end_range then it goes in the folder that starts there.
-    """
-
-    def date_to_str(a_date: date) -> str: return f"{a_date:%Y-%m-%d}"
-
-    date_range_start = date(2020, 1, 10)
-    date_range_end = date(2030, 12, 31)
-    date_range_df = pd.DataFrame({
-        'start': pd.date_range(date_range_start, date_range_end, freq='28D'),
-        'end': pd.date_range(date_range_start + timedelta(days=28), date_range_end + timedelta(days=28), freq='28D')
-    })
-    for col in date_range_df.columns:
-        assert all(date_range_df[col].dt.day_name() == 'Friday'), f'date_range_df: {col} dates do not land on a friday'
-
-    selected_date = pd.to_datetime(selected_date)
-    folder_start_date, folder_end_date = date_range_df[date_range_df['end'] >= selected_date].iloc[0, :]
-    folder_name = date_to_str(folder_start_date) + '__' + date_to_str(folder_end_date)
-
-    return folder_name
-
-
-def make_results_folder(folder_name: str) -> str:
-    # TODO: GCP Bucket read
-    """
-    makes sure appropriate directories exist to store generated results.
-    """
-    results_folder = 'result_archive'
-
-    if results_folder not in os.listdir():
-        os.mkdir(f'./{results_folder}')
-
-    path_to_new_folder = f'./{results_folder}/{folder_name}'
-    if folder_name not in os.listdir(f'./{results_folder}/'):
-        os.mkdir(path_to_new_folder)
-
-    return path_to_new_folder
+    return last_fri, last_fri.strftime('%Y_%b_%d_%a')
 
 
 def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:
     total = data.sum()
     total[col] = 'SUM'
     return data.append(total, ignore_index=True)
-
-
-def get_selected_numbers(path: str = './Selected Numbers.xlsx'):
-    # TODO: GCP Bucket read
-    """ validates Selected Numbers.xlsx. Ensures numbers selected are valid and there are no duplicates in Name col."""
-    selected = pd.read_excel(path, engine='openpyxl')
-
-    if not selected['Name'].is_unique:
-        duplicates = selected['Name'].value_counts()
-        raise ValueError(f'"Name" in Selected numbers needs to be unique. Correct:\n{duplicates[duplicates > 1]}')
-
-    number_cols = [col for col in selected.columns if col.startswith('Number')]
-    assert_values_in_range(selected, start=1, end=50, cols=number_cols)
-
-    star_cols = [col for col in selected.columns if col.startswith('Lucky Star')]
-    assert_values_in_range(selected, start=1, end=12, cols=star_cols)
-
-    return selected
 
 
 def assert_values_in_range(data: pd.DataFrame, start: int, end: int, cols: list):
