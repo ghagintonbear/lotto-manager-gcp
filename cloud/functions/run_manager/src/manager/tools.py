@@ -15,8 +15,7 @@ def get_last_friday_date(run_date: date) -> (date, str):
     else:
         diff = 0
     last_fri = run_date - timedelta(days=diff)
-    last_fri_str = f"{last_fri:%Y}_" + f"{last_fri:%B}"[0:4] + f"_Fri_{last_fri:%d}"
-    return last_fri, last_fri_str.lower()
+    return last_fri, last_fri.strftime('%Y_%b_%d_%a')
 
 
 def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:

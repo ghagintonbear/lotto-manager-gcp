@@ -1,5 +1,4 @@
 from datetime import date
-from unittest import mock
 
 import pytest
 
@@ -11,13 +10,13 @@ from manager.tools import (
 @pytest.mark.parametrize(
     'today, last_fri, last_fri_str',
     [
-        (date(2020, 12, 10), date(2020, 12, 4), 'Fri 04 Dec 2020'),
-        (date(2020, 12, 11), date(2020, 12, 11), 'Fri 11 Dec 2020'),
-        (date(2020, 12, 12), date(2020, 12, 11), 'Fri 11 Dec 2020'),
-        (date(2020, 12, 13), date(2020, 12, 11), 'Fri 11 Dec 2020'),
-        (date(2020, 12, 14), date(2020, 12, 11), 'Fri 11 Dec 2020'),
-        (date(2020, 12, 15), date(2020, 12, 11), 'Fri 11 Dec 2020'),
-        (date(2020, 12, 16), date(2020, 12, 11), 'Fri 11 Dec 2020')
+        (date(2020, 12, 10), date(2020, 12, 4), '2020_Dec_04_Fri'),
+        (date(2020, 12, 11), date(2020, 12, 11), '2020_Dec_11_Fri'),
+        (date(2020, 12, 12), date(2020, 12, 11), '2020_Dec_11_Fri'),
+        (date(2020, 12, 13), date(2020, 12, 11), '2020_Dec_11_Fri'),
+        (date(2020, 12, 14), date(2020, 12, 11), '2020_Dec_11_Fri'),
+        (date(2020, 12, 15), date(2020, 12, 11), '2020_Dec_11_Fri'),
+        (date(2020, 12, 16), date(2020, 12, 11), '2020_Dec_11_Fri')
     ]
 )
 def test_get_fri_date_str(today, last_fri, last_fri_str):
