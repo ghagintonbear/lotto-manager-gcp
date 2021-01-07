@@ -76,7 +76,7 @@ echo "*** STEP 7a/9 Creating BigQuery Database***"
 echo
 bq --location=${REGION} --project_id=${PROJECT_ID} mk \
     --dataset \
-    --description "Selected Numbers" \
+    --description "Key data files for ${PROJECT_ID}" \
     ${PROJECT_ID}:manager
 
 echo
