@@ -112,7 +112,7 @@ def establish_results_in_bigquery(dataset_name: str, results: pd.DataFrame, draw
     write_dictionary_to_bigquery(bq_client, data=draw_result, col_names=['Draw', 'Outcome'],
                                  table_name='draw_outcome', dataset_name=dataset_name)
 
-    write_dictionary_to_bigquery(bq_client, data=prize_breakdown, col_names=['Match Type', 'Prize Per UK Winner'],
+    write_dictionary_to_bigquery(bq_client, data=prize_breakdown, col_names=['Match_Type', 'Prize_Per_UK_Winner'],
                                  table_name='prize_breakdown', dataset_name=dataset_name)
 
     print(f'Successfully written all results to BigQuery {os.getenv("PROJECT_ID")}.{dataset_name}')
