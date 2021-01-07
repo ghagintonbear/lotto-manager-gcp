@@ -77,13 +77,13 @@ echo
 bq --location=${REGION} --project_id=${PROJECT_ID} mk \
     --dataset \
     --description "Selected Numbers" \
-    ${PROJECT_ID}:selected
+    ${PROJECT_ID}:manager
 
 echo
 echo "*** STEP 7b/9 Creating BigQuery Table using './selected_numbers.csv'***"
 echo
 bq load --autodetect --source_format=CSV \
-    ${PROJECT_ID}:selected.numbers \
+    ${PROJECT_ID}:manager.selected_numbers \
     '../../selected_numbers.csv'
 
 
