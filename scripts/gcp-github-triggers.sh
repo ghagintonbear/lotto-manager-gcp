@@ -11,7 +11,7 @@ PROJECT_ID="lotto-manager-$1"  # suffix is branch this project is attached to, i
 BRANCH_PATTERN="^$1$" # branch name we will match against to launch triggers
 REPO_NAME="lotto-manager-gcp"
 REPO_OWNER="ghagintonbear"
-DEPLOY_CONFIG_FILE="cloud/cloud-func-build.yaml"
+DEPLOY_CONFIG_FILE="scripts/cloud-func-build.yaml"
 
 ## CI Triggers
 # Get all triggers

@@ -6,7 +6,7 @@
 steps:
   - id: 'Run Unit Tests'
     name: 'python:3.8'  # 3.8 to match same environment as cloud functions execution
-    dir: 'cloud/functions/${_FUNCTION_NAME}'
+    dir: 'functions/${_FUNCTION_NAME}'
     entrypoint: '/bin/bash'
     #    Arguments are "daisy chained" so "pip install -r" only runs if "pip install pytest" succeeds etc
     args:
@@ -20,6 +20,11 @@ steps:
         && python -V \
         && echo "" \
         && echo "PROJECT_ID=$PROJECT_ID" \
+        && echo "" \
+        && echo "Copying 'manager' folder as subdir to 'src' to enable local reuse of shared folder" \
+        && cp -r ../../manager src/ \
+        && echo "Copying 'manager tests' folder as subdir to function folder to enable local reuse of shared folder" \
+        && cp -r ../../tests . \
         && echo "" \
         && echo "Base folder:" \
         && ls -la \
@@ -39,7 +44,7 @@ steps:
   # https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-functions
   - id: 'Deploy Function'
     name: 'gcr.io/cloud-builders/gcloud'
-    dir: 'cloud/functions/${_FUNCTION_NAME}'
+    dir: 'functions/${_FUNCTION_NAME}'
     args:
       - functions
       - deploy
