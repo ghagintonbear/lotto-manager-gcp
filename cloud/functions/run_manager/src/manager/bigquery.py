@@ -94,7 +94,7 @@ def write_dataframe_to_bigquery(client: bq.Client, data: pd.DataFrame, table_nam
 
 
 def create_bigquery_dataset(client: bq.Client, dataset_name: str):
-    dataset = bq.Dataset(dataset_name)
+    dataset = bq.Dataset(os.getenv('PROJECT_ID') + '.' + dataset_name)
     dataset.location = os.getenv('REGION')
 
     dataset = client.create_dataset(dataset, timeout=30)  # Make an API request.
