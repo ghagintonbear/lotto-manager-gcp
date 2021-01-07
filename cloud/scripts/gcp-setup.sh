@@ -27,32 +27,27 @@ else
 fi
 
 
-echo "*** STEP 1/9: Requesting for Authentication ***"
 echo
-gcloud auth login
-
-
-echo
-echo "*** STEP 2/9: Creating Project ***"
+echo "*** STEP 1/8: Creating Project ***"
 echo
 gcloud projects create ${PROJECT_ID}
 
 PROJECT_NUMBER=`gcloud projects list --filter=${PROJECT_ID} --format="value(PROJECT_NUMBER)"`
 
 echo
-echo "*** STEP 3/9: Link Project to billing account ***"
+echo "*** STEP 2/8: Link Project to billing account ***"
 echo
 gcloud alpha billing projects link ${PROJECT_ID} \
     --billing-account ${BILLING_ACCOUNT_ID}
 
 echo
-echo "*** STEP 4/9: Selecting Project ***"
+echo "*** STEP 3/8: Selecting Project ***"
 echo
 gcloud config set project ${PROJECT_ID}
 
 
 echo
-echo "*** STEP 5/9: Enabling GCP APIs ***"
+echo "*** STEP 4/8: Enabling GCP APIs ***"
 echo
 gcloud services enable cloudtrace.googleapis.com            # Cloud Trace API
 gcloud services enable logging.googleapis.com               # Cloud Logging API
@@ -66,13 +61,13 @@ gcloud services enable bigquery.googleapis.com              # BigQuery usage
 
 
 echo
-echo "*** STEP 6/9: 60s delay - allow APIs to enable ***"
+echo "*** STEP 5/8: 60s delay - allow APIs to enable ***"
 echo
 sleep 60
 
 
 echo
-echo "*** STEP 7a/9 Creating BigQuery Database***"
+echo "*** STEP 6a/8 Creating BigQuery Database***"
 echo
 bq --location=${REGION} --project_id=${PROJECT_ID} mk \
     --dataset \
@@ -80,7 +75,7 @@ bq --location=${REGION} --project_id=${PROJECT_ID} mk \
     ${PROJECT_ID}:manager
 
 echo
-echo "*** STEP 7b/9 Creating BigQuery Table using './selected_numbers.csv'***"
+echo "*** STEP 6b/8 Creating BigQuery Table using './selected_numbers.csv'***"
 echo
 bq load --autodetect --source_format=CSV \
     ${PROJECT_ID}:manager.selected_numbers \
@@ -88,7 +83,7 @@ bq load --autodetect --source_format=CSV \
 
 
 echo
-echo "*** STEP 8/9 Adding permissions"
+echo "*** STEP 7/8 Adding permissions"
 echo
 # note gcf-admin-robot = Google Cloud Functions Service Agent
 # and PROJECT_ID@appspot.gserviceaccount.com is App engine default service account:
@@ -125,7 +120,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 
 
 echo
-echo "*** STEP 9/9 Creating Cloud Scheduler and Topic ***"
+echo "*** STEP 8/8 Creating Cloud Scheduler and Topic ***"
 echo
 # Have to create an app engine app in order to use scheduler
 gcloud app create --project=${PROJECT_ID} --region=${REGION}
@@ -159,7 +154,7 @@ echo "*"
 echo "*    You will now see the newly connected repository listed as 'inactive',"
 echo "*      so you are ready to connect the repository by triggers in the next step."
 echo "*"
-echo "* 2. run './gcp-github-triggers.sh $1' to setup CI triggers"
+echo "* 2. run `sh ./gcp-github-triggers.sh \'$1\'` to setup CI triggers"
 echo "********************************************************"
 echo
 echo
