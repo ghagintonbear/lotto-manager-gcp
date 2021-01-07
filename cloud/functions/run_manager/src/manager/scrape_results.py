@@ -40,6 +40,7 @@ def extract_draw_result(draw_date: date, hist_results: pd.DataFrame) -> dict:
         raise Exception(f'Selected draw_date: "{draw_date:%d-%m-%Y}" maps to many in hist_results["DrawDate"]')
 
     draw_result = hist_results[draw_date_mask].to_dict('records')[0]
+    draw_result['DrawDate'] = draw_result['DrawDate'].strftime('%Y-%m-%d-%a')
 
     return draw_result
 
