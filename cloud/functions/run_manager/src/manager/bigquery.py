@@ -29,27 +29,11 @@ def read_selected_numbers():
 
 
 def write_dictionary_to_bigquery(client: bq.Client, data: dict, col_names: list, table_name: str, dataset_name: str):
-    table_id = '.'.join([os.getenv('PROJECT_ID'), dataset_name, table_name])
 
-    data_list = [dict(zip(col_names, values)) for values in data.items()]
+    data = dict(zip(col_names, [data.keys(), data.values()]))
 
-    job_config = bq.LoadJobConfig(
-        schema=[bq.SchemaField(col, bq.enums.SqlTypeNames.STRING) for col in col_names],
-        # WRITE_TRUNCATE replaces the table with the loaded data.
-        write_disposition="WRITE_TRUNCATE",
-    )
-
-    load_job = client.load_table_from_json(
-        data_list,
-        table_id,
-        location=os.getenv('REGION'),  # Must match the destination dataset location.
-        job_config=job_config,
-    )  # Make an API request.
-
-    load_job.result()  # Waits for the job to complete.
-
-    destination_table = client.get_table(table_id)
-    print("Loaded {} rows.".format(destination_table.num_rows))
+    write_dataframe_to_bigquery(client, pd.DataFrame(data, columns=col_names),
+                                table_name=table_name, dataset_name=dataset_name)
     return
 
 
@@ -77,20 +61,6 @@ def write_dataframe_to_bigquery(client: bq.Client, data: pd.DataFrame, table_nam
     table = client.get_table(table_id)  # Make an API request.
     print(f"Loaded {table.num_rows} rows and {len(table.schema)} columns to {table_id}")
     return
-
-
-# def create_bigquery_table(client: bq.Client, dataset_name: str, table_name: str, schema: dict):
-#     schema_list = []
-#     for col_name, field_type in schema.items():
-#         column = bq.SchemaField(col_name, field_type, mode="REQUIRED")
-#         schema_list.append(column)
-#
-#     table_id = ".".join([os.getenv('PROJECT_ID'), dataset_name, table_name])
-#     table = bq.Table(table_id, schema=schema_list)
-#     table = client.create_table(table)
-#
-#     print(f"Created table {table.project}.{table.dataset_id}.{table.table_id}")
-#     return
 
 
 def create_bigquery_dataset(client: bq.Client, dataset_name: str):
