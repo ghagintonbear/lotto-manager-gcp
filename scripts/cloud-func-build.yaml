@@ -21,6 +21,11 @@ steps:
         && echo "" \
         && echo "PROJECT_ID=$PROJECT_ID" \
         && echo "" \
+        && echo "Copying 'manager' folder as subdir to 'src' to enable local reuse of shared folder" \
+        && cp -r ../../manager src/ \
+        && echo "Copying 'manager tests' folder as subdir to 'tests' to enable local reuse of shared folder" \
+        && cp -r ../../tests . \
+        && echo "" \
         && echo "Base folder:" \
         && ls -la \
         && echo "" \
