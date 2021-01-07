@@ -154,7 +154,7 @@ echo "*"
 echo "*    You will now see the newly connected repository listed as 'inactive',"
 echo "*      so you are ready to connect the repository by triggers in the next step."
 echo "*"
-echo "* 2. run `sh ./gcp-github-triggers.sh \'$1\'` to setup CI triggers"
+echo "* 2. run: sh ./gcp-github-triggers.sh '$1' to setup CI triggers"
 echo "********************************************************"
 echo
 echo
