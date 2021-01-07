@@ -79,7 +79,7 @@ echo "*** STEP 6b/8 Creating BigQuery Table using './selected_numbers.csv'***"
 echo
 bq load --autodetect --source_format=CSV \
     ${PROJECT_ID}:manager.selected_numbers \
-    '../../selected_numbers.csv'
+    '../selected_numbers.csv'
 
 
 echo
