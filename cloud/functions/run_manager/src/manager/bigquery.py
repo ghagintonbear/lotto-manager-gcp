@@ -2,6 +2,7 @@ import os
 
 import pandas as pd
 import google.cloud.bigquery as bq
+from google.cloud.exceptions import NotFound
 
 from manager.tools import assert_values_in_range
 
@@ -64,11 +65,19 @@ def write_dataframe_to_bigquery(client: bq.Client, data: pd.DataFrame, table_nam
 
 
 def create_bigquery_dataset(client: bq.Client, dataset_name: str):
-    dataset = bq.Dataset(os.getenv('PROJECT_ID') + '.' + dataset_name)
-    dataset.location = os.getenv('REGION')
+    dataset_id = os.getenv('PROJECT_ID') + '.' + dataset_name
 
-    dataset = client.create_dataset(dataset, timeout=30)  # Make an API request.
-    print(f"Created dataset {client.project}.{dataset.dataset_id}")
+    try:
+        client.get_dataset(dataset_id)  # Make an API request.
+        print(f"Dataset {dataset_id} already exists")
+
+    except NotFound:
+        print(f"Dataset {dataset_id} is not found. Attempting to create it.")
+        dataset = bq.Dataset(dataset_id)
+        dataset.location = os.getenv('REGION')
+        dataset = client.create_dataset(dataset, timeout=30)  # Make an API request.
+        print(f"Created dataset {client.project}.{dataset.dataset_id}")
+
     return
 
 
