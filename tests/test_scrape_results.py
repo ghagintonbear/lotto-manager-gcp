@@ -7,7 +7,7 @@ from manager.scrape_results import scrape_historical_results, extract_draw_resul
 
 
 def read_html(file_name):
-    with open(f'./tests/resource/{file_name}.html') as html:
+    with open(f'../tests/resource/{file_name}.html') as html:
         page = html.read()
     return page
 
