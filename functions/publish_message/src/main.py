@@ -1,38 +1,52 @@
-import json
 import os
 
-from google.cloud import pubsub_v1
+import google.cloud.pubsub_v1 as pubsub
+
+""" Example JSON trigger:
+{
+  "topic_name": "scheduled-weekly-9am",
+  "message": "run_manager_between asked to publish on: 2021-01-07",
+  "run_date": "2021-01-07"
+}
+"""
 
 # Instantiates a Pub/Sub client
-publisher = pubsub_v1.PublisherClient()
-PROJECT_ID = os.getenv('GOOGLE_CLOUD_PROJECT')
+publisher = pubsub.PublisherClient()
+gcp_project_id = os.getenv('PROJECT_ID')
 
 
 # Publishes a message to a Cloud Pub/Sub topic.
-def publish(request):
-    request_json = request.get_json(silent=True)
-
-    topic_name = request_json.get("topic")
-    message = request_json.get("message")
-
-    if not topic_name or not message:
-        return 'Missing "topic" and/or "message" parameter.', 400
-
-    print(f'Publishing message to topic {topic_name}')
+def publish_message(request):
+    topic_name = extract_field_from_request(request, 'topic_name')
+    message = extract_field_from_request(request, 'message')
+    run_date = extract_field_from_request(request, 'run_date')
 
     # References an existing topic
-    topic_path = publisher.topic_path(PROJECT_ID, topic_name)
+    topic_path = publisher.topic_path(gcp_project_id, topic_name)
 
-    message_json = json.dumps({
-        'data': {'message': message},
-    })
-    message_bytes = message_json.encode('utf-8')
+    message_bytes = message.encode('utf-8')
 
     # Publishes a message
     try:
-        publish_future = publisher.publish(topic_path, data=message_bytes)
+        publish_future = publisher.publish(topic_path, message_bytes, run_date=run_date)
         publish_future.result()  # Verify the publish succeeded
-        return 'Message published.'
+        return f'Message {message} published.'
     except Exception as e:
         print(e)
         return e, 500
+
+
+def extract_field_from_request(request, field_name: str) -> str:
+    request_json = request.get_json()
+    request_args = request.args
+
+    if request_json and field_name in request_json:
+        field_contents = request_json[field_name]
+    elif request_args and field_name in request_args:
+        field_contents = request_args[field_name]
+    else:
+        message = f'"{field_name}" not defined via JSON or arguments in http header'
+        print(f'ERROR: {message}')
+        raise RuntimeError(message)
+
+    return field_contents
