@@ -38,6 +38,7 @@ do
         TRIGGER_TYPE=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep trigger`
         MEMORY=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep memory`
         TIMEOUT=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep timeout`
+        WITH_MANAGER=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep manager | cut -d "=" -f 2-`
 
         # https://cloud.google.com/sdk/gcloud/reference/beta/builds/triggers/create/github
         gcloud beta builds triggers create github \
@@ -46,7 +47,7 @@ do
             --repo-owner=${REPO_OWNER} \
             --branch-pattern=${BRANCH_PATTERN} \
             --build-config=${DEPLOY_CONFIG_FILE} \
-            --substitutions=_FUNCTION_NAME=${FUNCTION_NAME},_RUNTIME=${RUNTIME},_TRIGGER_TYPE=${TRIGGER_TYPE},_MEMORY=${MEMORY},_TIMEOUT=${TIMEOUT} \
+            --substitutions=_FUNCTION_NAME=${FUNCTION_NAME},_RUNTIME=${RUNTIME},_TRIGGER_TYPE=${TRIGGER_TYPE},_MEMORY=${MEMORY},_TIMEOUT=${TIMEOUT},_WITH_MANAGER=${WITH_MANAGER} \
             --project=${PROJECT_ID}
     else
         echo
