@@ -1,0 +1,4 @@
+# Pre-installed packages from
+# https://cloud.google.com/functions/docs/writing/specifying-dependencies-python#pre-installed_packages
+
+google-cloud-pubsub==2.2.0
