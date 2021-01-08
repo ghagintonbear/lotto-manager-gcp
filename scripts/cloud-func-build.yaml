@@ -21,25 +21,32 @@ steps:
         && echo "" \
         && echo "PROJECT_ID=$PROJECT_ID" \
         && echo "" \
-        && echo "Copying 'manager' folder as subdir to 'src' to enable local reuse of shared folder" \
-        && cp -r ../../manager src/ \
-        && echo "Copying 'manager tests' folder as subdir to function folder to enable local reuse of shared folder" \
-        && cp -r ../../tests . \
-        && echo "" \
+        && echo "Using manager? ${_WITH_MANAGER}" \
+        && if [ "${_WITH_MANAGER}" = 'yes' ]; then \
+          echo "Copying 'manager' folder as subdir to 'src' to enable local reuse of shared folder" \
+          && cp -r ../../manager src/ \
+          && echo "Copying 'manager tests' folder as subdir to function folder to enable local reuse of shared folder" \
+          && cp -r ../../tests . \
+          && echo ""; \
+        fi \
         && echo "Base folder:" \
         && ls -la \
         && echo "" \
         && echo "src folder:" \
         && ls -la src \
         && echo "" \
+        && if [ ! -d tests ]; then mkdir tests; fi \
         && echo "tests folder:" \
         && ls -la tests \
         && echo "" \
         && pip install pytest \
         && pip install -r src/requirements.txt \
         && cd src \
+        && printf "__pycache_/\n*.py[cod]\n*\$py.class\n.pytest_cache/\nv/" >> .gcloudignore \
         && echo "GCP_PROJECT=$PROJECT_ID python -m pytest -v ../tests" \
-        && GCP_PROJECT=$PROJECT_ID python -m pytest -v ../tests \
+        && if [ "$(python -m pytest --co | grep "^collected" | cut -d ' ' -f2)" -gt 0 ]; then \
+          GCP_PROJECT=$PROJECT_ID python -m pytest -v ../tests;
+        fi
 
   # https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-functions
   - id: 'Deploy Function'
