@@ -4,6 +4,8 @@ import json
 import aiohttp
 import pandas as pd
 
+from utilities import extract_date_field_from_request, create_authenticated_cloud_function_header
+
 
 def run_manager_between(request):
     start_date = extract_date_field_from_request(request, 'start_date')
