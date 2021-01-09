@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+from random import uniform
 
 import aiohttp
 import pandas as pd
@@ -14,8 +15,8 @@ from utilities import extract_date_field_from_request, create_authenticated_clou
 }
 """
 
-gcp_region = os.getenv('FUNCTION_REGION')
-gcp_project = os.getenv('GCP_PROJECT')
+gcp_region = os.getenv('REGION')
+gcp_project = os.getenv('PROJECT_ID')
 publish_message_endpoint = f'https://{gcp_region}-{gcp_project}.cloudfunctions.net/publish_message'
 
 MAXIMUM_NUMBER_OF_ATTEMPTS = 5
@@ -57,6 +58,7 @@ async def publish_message_async(session, endpoint, date):
         "message": f"`run_manager_between` is publishing message on `cheduled-weekly-9am` with `run_date={date_str}`",
         "run_date": date_str
     }
+    failed_attempts = []
     for attempt_number in range(MAXIMUM_NUMBER_OF_ATTEMPTS):
 
         response = await session.post(endpoint, json=json_args)
@@ -67,6 +69,13 @@ async def publish_message_async(session, endpoint, date):
             if response.status == 200:
                 print(f'Completed on attempt: #{attempt_number} for args={json_args}')
                 return text_response
+            else:
+                failed_attempts.append((response.status, endpoint, text_response))
+                # No need to wait after the last attempt, we've given up now - so don't waste compute cycles
+                if attempt_number < MAXIMUM_NUMBER_OF_ATTEMPTS - 1:
+                    sleep_time = uniform(1, 16)
+                    await asyncio.sleep(sleep_time)
+                    print(f'run_manager_between slept for: {sleep_time:.2f}s')
 
-    print(f'Failed after {MAXIMUM_NUMBER_OF_ATTEMPTS} attempts for args={json_args}')
+    print(f'Failed after {MAXIMUM_NUMBER_OF_ATTEMPTS} attempts for args={json_args}. Reasons: {failed_attempts}')
     return f'Failed {MAXIMUM_NUMBER_OF_ATTEMPTS} Times'
