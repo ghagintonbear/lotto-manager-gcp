@@ -1,0 +1,7 @@
+# Pre-installed packages from
+# https://cloud.google.com/functions/docs/writing/specifying-dependencies-python#pre-installed_packages
+
+# run_between requirements:
+aiohttp
+pandas==1.2.0
+requests==2.25.1

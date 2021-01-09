@@ -30,7 +30,8 @@ def publish_message(request):
     try:
         publish_future = publisher.publish(topic_path, message_bytes, run_date=run_date)
         publish_future.result()  # Verify the publish succeeded
-        return f'Message {message} published.'
+        print(f'Message {message} published.')
+        return 'Successfully Published'
     except Exception as e:
         print(e)
         return e, 500
