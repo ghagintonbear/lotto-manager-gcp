@@ -1,5 +1,5 @@
 trigger-http
 runtime=python38
-memory=128MB
+memory=256MB
 timeout=60s
 manager=no
