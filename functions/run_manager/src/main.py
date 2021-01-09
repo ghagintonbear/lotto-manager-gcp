@@ -1,7 +1,7 @@
 import base64
 from datetime import datetime, date
 
-from manager.bigquery import read_selected_numbers, establish_results_in_bigquery
+from manager.bigquery import read_selected_numbers, establish_results_in_bigquery, cumulating_results
 from manager.check_matches import collect_winning_numbers, check_matches_on_selected
 from manager.scrape_results import scrape_historical_results, scrape_prize_breakdown, extract_draw_result
 from manager.tools import get_last_friday_date
@@ -21,17 +21,18 @@ def run_manager(event, _context):
         pubsub_message = base64.b64decode(event['data']).decode('utf-8')
         print(f'PubSub event: "{pubsub_message}"')
 
-    if 'attributes' in event:
-        print(f'PubSub attributes: attributes={event["attributes"]}')
-        if 'run_date' in event["attributes"]:
-            run_date_str = event["attributes"]['run_date']
+    if 'attributes' in event and event['attributes'] is not None:
+        attributes = event['attributes']
+        if 'run_date' in attributes and 'cumulate_results' in attributes:
+            run_date_str = attributes['run_date']
             run_date = datetime.strptime(run_date_str, '%Y-%m-%d')
+            cumulate_results = eval(attributes['cumulate_results'])
         else:
-            run_date = datetime.now().date()
-        if 'cumulate_results' in event['attributes']:
-            cumulate_results = event["attributes"]['cumulate_results']
-        else:
-            cumulate_results = True
+            raise RuntimeError('Expected "run_date" AND "cumulate_results" in attributes. '
+                               f'Received: {event["attributes"]}')
+    else:
+        run_date = datetime.now().date()
+        cumulate_results = True
 
     selected = read_selected_numbers()
 
@@ -48,7 +49,7 @@ def run_manager(event, _context):
     )
 
     if cumulate_results:
-        cumulate_results
+        cumulating_results()
 
     return 'Completed'
 
