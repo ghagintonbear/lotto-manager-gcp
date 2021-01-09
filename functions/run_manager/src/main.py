@@ -28,6 +28,10 @@ def run_manager(event, _context):
             run_date = datetime.strptime(run_date_str, '%Y-%m-%d')
         else:
             run_date = datetime.now().date()
+        if 'cumulate_results' in event['attributes']:
+            cumulate_results = event["attributes"]['cumulate_results']
+        else:
+            cumulate_results = True
 
     selected = read_selected_numbers()
 
@@ -42,6 +46,9 @@ def run_manager(event, _context):
         dataset_name=draw_date_str,
         results=results, draw_result=draw_result, prize_breakdown=prize_breakdown
     )
+
+    if cumulate_results:
+        cumulate_results
 
     return 'Completed'
 
