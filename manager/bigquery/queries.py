@@ -18,14 +18,14 @@ def create_general_summary_query(dataset_ids: list) -> str:
     query_for_appending_tables = ' UNION ALL\n'.join([
         f'SELECT * FROM collapsed_to_one_row_{dataset_id}' for dataset_id in dataset_ids
     ])
-    general_summary_query = query_for_all_general_summaries + '\n' + query_for_appending_tables
+    general_summary_query = 'WITH ' + query_for_all_general_summaries + '\n' + query_for_appending_tables
     print(f'General Summary Query:\n{general_summary_query}')
     return general_summary_query
 
 
 def _query_for_general_summary(dataset_id: str) -> str:
     return \
-        f"""WITH results_with_new_columns AS (
+        f"""results_with_new_columns AS (
                 SELECT Match_Type, '{dataset_id}' AS Play_Date, 
                     CAST(REGEXP_REPLACE(prize, r"[\D]+", "") AS INT64) AS Winnings,
                     (select COUNT(*) from `{dataset_id}.results`) AS Num_of_Players

@@ -33,8 +33,9 @@ def cumulating_results() -> None:
     datasets_ids_with_results = []
     for dataset_list_item in bq_client.list_datasets():
         dataset_id = dataset_list_item.dataset_id
-        if re.fullmatch(r'\d{4}_\d{2}_\d{2}_\w*_Fri', dataset_id):
-            if 'results' in list(bq_client.list_tables(dataset=dataset_id)):
+        if re.fullmatch(r'\d{4}_\d{2}_\d{2}_\w*', dataset_id):
+            tables_list = [table.table_id for table in bq_client.list_tables(dataset=dataset_id)]
+            if 'results' in tables_list:
                 datasets_ids_with_results.append(dataset_id)
 
     if datasets_ids_with_results:
