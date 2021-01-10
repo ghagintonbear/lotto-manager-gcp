@@ -30,9 +30,12 @@ def run_manager_between(request):
         print(f'Start Date: {start_date} is NOT before End Date: {end_date}. Stopping here.')
         return
 
+    date_collection = pd.date_range(start_date, end_date, freq="7D")
+    date_cumulate_flag_collection = list(zip(date_collection, date_collection == date_collection.max()))
+
     async_results = asyncio.run(
         publish_messages_async(endpoint=publish_message_endpoint,
-                               date_collection=pd.date_range(start_date, end_date, freq="7D"))
+                               collection=date_cumulate_flag_collection)
     )
     results = {}
     for result in async_results:
@@ -41,22 +44,23 @@ def run_manager_between(request):
     return json.dumps(results)
 
 
-async def publish_messages_async(endpoint, date_collection):
+async def publish_messages_async(endpoint, collection):
     header = create_authenticated_cloud_function_header(endpoint)
 
     async with aiohttp.ClientSession(headers=header) as session:
         return await asyncio.gather(
-            *(publish_message_async(session, endpoint, date) for date in date_collection),
+            *(publish_message_async(session, endpoint, date, cumulate_flag) for date, cumulate_flag in collection),
             return_exceptions=True
         )
 
 
-async def publish_message_async(session, endpoint, date):
+async def publish_message_async(session, endpoint, date, cumulate_flag):
     date_str = f'{date:%Y-%m-%d}'
     json_args = {
         "topic_name": "scheduled-weekly-9am",
         "message": f"`run_manager_between` is publishing message on `cheduled-weekly-9am` with `run_date={date_str}`",
-        "run_date": date_str
+        "run_date": date_str,
+        "cumulate_results": cumulate_flag
     }
     failed_attempts = []
     for attempt_number in range(MAXIMUM_NUMBER_OF_ATTEMPTS):
