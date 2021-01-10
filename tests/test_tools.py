@@ -10,13 +10,13 @@ from manager.tools import (
 @pytest.mark.parametrize(
     'today, last_fri, last_fri_str',
     [
-        (date(2020, 12, 10), date(2020, 12, 4), '2020_Dec_04_Fri'),
-        (date(2020, 12, 11), date(2020, 12, 11), '2020_Dec_11_Fri'),
-        (date(2020, 12, 12), date(2020, 12, 11), '2020_Dec_11_Fri'),
-        (date(2020, 12, 13), date(2020, 12, 11), '2020_Dec_11_Fri'),
-        (date(2020, 12, 14), date(2020, 12, 11), '2020_Dec_11_Fri'),
-        (date(2020, 12, 15), date(2020, 12, 11), '2020_Dec_11_Fri'),
-        (date(2020, 12, 16), date(2020, 12, 11), '2020_Dec_11_Fri')
+        (date(2020, 12, 10), date(2020, 12, 4), '2020_12_04_Dec_Fri'),
+        (date(2020, 12, 11), date(2020, 12, 11), '2020_12_11_Dec_Fri'),
+        (date(2020, 12, 12), date(2020, 12, 11), '2020_12_11_Dec_Fri'),
+        (date(2020, 12, 13), date(2020, 12, 11), '2020_12_11_Dec_Fri'),
+        (date(2020, 12, 14), date(2020, 12, 11), '2020_12_11_Dec_Fri'),
+        (date(2020, 12, 15), date(2020, 12, 11), '2020_12_11_Dec_Fri'),
+        (date(2020, 12, 16), date(2020, 12, 11), '2020_12_11_Dec_Fri')
     ]
 )
 def test_get_fri_date_str(today, last_fri, last_fri_str):
