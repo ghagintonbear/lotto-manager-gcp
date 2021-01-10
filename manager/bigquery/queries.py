@@ -4,10 +4,13 @@ import google.cloud.bigquery as bq
 
 
 def run_query(client: bq.Client, query: str, destination_table_name: str) -> None:
-    job_config = bq.QueryJobConfig(destination='.'.join([os.getenv("PROJECT_ID"), 'manager', destination_table_name]))
+    job_config = bq.QueryJobConfig(
+        destination='.'.join([os.getenv("PROJECT_ID"), 'manager', destination_table_name]),
+        write_disposition='WRITE_TRUNCATE'
+    )
     query_job = client.query(query, job_config=job_config)
     general_summary_job_result = query_job.result()
-    print(f'general_summary_job_result: {general_summary_job_result}')
+    print(f'general_summary_job_result completed?: {bool(general_summary_job_result)}')
     return
 
 
@@ -19,7 +22,6 @@ def create_general_summary_query(dataset_ids: list) -> str:
         f'SELECT * FROM collapsed_to_one_row_{dataset_id}' for dataset_id in dataset_ids
     ])
     general_summary_query = 'WITH ' + query_for_all_general_summaries + '\n' + query_for_appending_tables
-    print(f'General Summary Query:\n{general_summary_query}')
     return general_summary_query
 
 
