@@ -18,10 +18,12 @@ def create_general_summary_query(dataset_ids: list) -> str:
     query_for_all_general_summaries = ',\n'.join([
         _query_for_general_summary(dataset_id) for dataset_id in dataset_ids
     ])
-    query_for_appending_tables = ' UNION ALL\n'.join([
-        f'SELECT * FROM collapsed_to_one_row_{dataset_id}' for dataset_id in dataset_ids
+    query_for_appending_summaries = ' UNION ALL\n'.join([
+        f'SELECT * FROM summary_{dataset_id}' for dataset_id in dataset_ids
     ])
-    general_summary_query = 'WITH ' + query_for_all_general_summaries + '\n' + query_for_appending_tables
+    general_summary_query = 'WITH ' + query_for_all_general_summaries + '\n' + query_for_appending_summaries \
+                            + '\n ORDER BY Play_Date'
+
     return general_summary_query
 
 

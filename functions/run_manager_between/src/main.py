@@ -31,7 +31,7 @@ def run_manager_between(request):
         return
 
     date_collection = pd.date_range(start_date, end_date, freq="7D")
-    date_cumulate_flag_collection = list(zip(date_collection, date_collection == date_collection.max()))
+    date_cumulate_flag_collection = list(zip(date_collection, (date_collection == date_collection.max()).astype(str)))
 
     async_results = asyncio.run(
         publish_messages_async(endpoint=publish_message_endpoint,
@@ -39,7 +39,7 @@ def run_manager_between(request):
     )
     results = {}
     for result in async_results:
-        results[result] = results.get(result, 0) + 1
+        results[str(result)] = results.get(result, 0) + 1
 
     return json.dumps(results)
 
