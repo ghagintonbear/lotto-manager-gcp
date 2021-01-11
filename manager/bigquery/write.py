@@ -1,36 +1,11 @@
 import os
 
-import pandas as pd
 import google.cloud.bigquery as bq
+import pandas as pd
 from google.cloud.exceptions import NotFound
-
-from manager.tools import assert_values_in_range
-
-
-def read_selected_numbers():
-    """ Read manager.selected_numbers ('./selected_numbers.csv') from BigQuery and validates them.
-        Ensures numbers selected are valid and there are no duplicates in Name col.
-    """
-    select_all_query = f"""
-    SELECT *
-    FROM `{os.getenv('PROJECT_ID')}.manager.selected_numbers`"""
-    selected_numbers = pd.read_gbq(select_all_query)
-
-    if not selected_numbers['Name'].is_unique:
-        duplicates = selected_numbers['Name'].value_counts()
-        raise ValueError(f'"Name" in Selected numbers needs to be unique. Correct:\n{duplicates[duplicates > 1]}')
-
-    number_cols = [col for col in selected_numbers.columns if col.startswith('Number_')]
-    assert_values_in_range(selected_numbers, start=1, end=50, cols=number_cols)
-
-    star_cols = [col for col in selected_numbers.columns if col.startswith('Lucky_Star_')]
-    assert_values_in_range(selected_numbers, start=1, end=12, cols=star_cols)
-
-    return selected_numbers
 
 
 def write_dictionary_to_bigquery(client: bq.Client, data: dict, col_names: list, table_name: str, dataset_name: str):
-
     data = dict(zip(col_names, [data.keys(), data.values()]))
     data = pd.DataFrame.from_dict(data, orient='columns')
 
@@ -78,21 +53,4 @@ def create_bigquery_dataset(client: bq.Client, dataset_name: str):
         dataset = client.create_dataset(dataset, timeout=30)  # Make an API request.
         print(f"Created dataset {client.project}.{dataset.dataset_id}")
 
-    return
-
-
-def establish_results_in_bigquery(dataset_name: str, results: pd.DataFrame, draw_result: dict, prize_breakdown: dict):
-    bq_client = bq.Client()
-
-    create_bigquery_dataset(bq_client, dataset_name=dataset_name)
-
-    write_dataframe_to_bigquery(bq_client, data=results, table_name='results', dataset_name=dataset_name)
-
-    write_dictionary_to_bigquery(bq_client, data=draw_result, col_names=['Draw', 'Outcome'],
-                                 table_name='draw_outcome', dataset_name=dataset_name)
-
-    write_dictionary_to_bigquery(bq_client, data=prize_breakdown, col_names=['Match_Type', 'Prize_Per_UK_Winner'],
-                                 table_name='prize_breakdown', dataset_name=dataset_name)
-
-    print(f'Successfully written all results to BigQuery {os.getenv("PROJECT_ID")}.{dataset_name}')
     return
