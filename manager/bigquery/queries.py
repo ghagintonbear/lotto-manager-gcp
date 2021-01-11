@@ -10,7 +10,7 @@ def run_query(client: bq.Client, query: str, destination_table_name: str) -> Non
     )
     query_job = client.query(query, job_config=job_config)
     general_summary_job_result = query_job.result()
-    print(f'general_summary_job_result completed?: {bool(general_summary_job_result)}')
+    print(f'{destination_table_name}_query_job_result completed?: {bool(general_summary_job_result)}')
     return
 
 
@@ -35,7 +35,7 @@ def create_player_summary_query(dataset_ids: [str]) -> str:
         f"""WITH all_player_summaries AS (
             {query_for_all_player_summaries}
             )
-            SELECT Name, SUM(Winnings_per_Player) AS Total_Cumulated_Winnings
+            SELECT Name, SUM(Winnings_per_Player) AS Total_Cumulated_Winnings, COUNT(Play_Date) AS Days_Played
             FROM all_player_summaries
             GROUP BY Name
         """

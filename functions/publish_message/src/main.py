@@ -1,13 +1,16 @@
 import os
+from typing import Union
 
 import google.cloud.pubsub_v1 as pubsub
 
 """ Example JSON trigger:
 {
   "topic_name": "scheduled-weekly-9am",
-  "message": "run_manager_between asked to publish on: 2021-01-07",
-  "run_date": "2021-01-07",
-  "cumulate_results": "True"
+  "message": "service asked to publish on: 2021-01-07",
+  "attributes": {
+    "run_date": "2021-01-07",
+    "cumulate_results": "True" 
+  }
 }
 """
 
@@ -20,8 +23,7 @@ gcp_project_id = os.getenv('PROJECT_ID')
 def publish_message(request):
     topic_name = extract_field_from_request(request, 'topic_name')
     message = extract_field_from_request(request, 'message')
-    run_date = extract_field_from_request(request, 'run_date')
-    cumulate_results = extract_field_from_request(request, 'cumulate_results')
+    attributes = extract_field_from_request(request, 'attributes')
 
     # References an existing topic
     topic_path = publisher.topic_path(gcp_project_id, topic_name)
@@ -30,8 +32,7 @@ def publish_message(request):
 
     # Publishes a message
     try:
-        publish_future = publisher.publish(topic_path, message_bytes,
-                                           run_date=run_date, cumulate_results=cumulate_results)
+        publish_future = publisher.publish(topic_path, message_bytes, **attributes)
         publish_future.result()  # Verify the publish succeeded
         print(f'Message {message} published.')
         return 'Successfully Published'
@@ -40,7 +41,7 @@ def publish_message(request):
         return e, 500
 
 
-def extract_field_from_request(request, field_name: str) -> str:
+def extract_field_from_request(request, field_name: str) -> Union[str, dict]:
     request_json = request.get_json()
     request_args = request.args
 
