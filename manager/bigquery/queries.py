@@ -35,7 +35,7 @@ def create_player_summary_query(dataset_ids: [str]) -> str:
         f"""WITH all_player_summaries AS (
             {query_for_all_player_summaries}
             )
-            SELECT Name, SUM(Winnings_per_Player)
+            SELECT Name, SUM(Winnings_per_Player) AS Total_Cumulated_Winnings
             FROM all_player_summaries
             GROUP BY Name
         """
