@@ -58,9 +58,11 @@ async def publish_message_async(session, endpoint, date, cumulate_flag):
     date_str = f'{date:%Y-%m-%d}'
     json_args = {
         "topic_name": "scheduled-weekly-9am",
-        "message": f"`run_manager_between` is publishing message on `cheduled-weekly-9am` with `run_date={date_str}`",
-        "run_date": date_str,
-        "cumulate_results": cumulate_flag
+        "message": f"`run_manager_between` asked to publish on `scheduled-weekly-9am` for `run_date={date_str}`",
+        "attributes": {
+            "run_date": date_str,
+            "cumulate_results": cumulate_flag
+        }
     }
     failed_attempts = []
     for attempt_number in range(MAXIMUM_NUMBER_OF_ATTEMPTS):
