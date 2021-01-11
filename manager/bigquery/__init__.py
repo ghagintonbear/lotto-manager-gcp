@@ -6,7 +6,7 @@ import google.cloud.bigquery as bq
 
 from manager.bigquery.read import read_selected_numbers
 from manager.bigquery.write import create_bigquery_dataset, write_dataframe_to_bigquery, write_dictionary_to_bigquery
-from manager.bigquery.queries import run_query, create_general_summary_query
+from manager.bigquery.queries import run_query, create_general_summary_query, create_player_summary_query
 
 
 def establish_results_in_bigquery(dataset_name: str, results: pd.DataFrame,
@@ -43,6 +43,11 @@ def cumulating_results() -> None:
             client=bq_client,
             query=create_general_summary_query(dataset_ids=datasets_ids_with_results),
             destination_table_name='general_summary'
+        )
+        run_query(
+            client=bq_client,
+            query=create_player_summary_query(dataset_ids=datasets_ids_with_results),
+            destination_table_name='player_summary'
         )
     else:
         print('func "cumulate_results" Found No Datasets with results')

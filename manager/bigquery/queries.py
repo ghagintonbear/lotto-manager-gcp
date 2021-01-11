@@ -14,7 +14,7 @@ def run_query(client: bq.Client, query: str, destination_table_name: str) -> Non
     return
 
 
-def create_general_summary_query(dataset_ids: list) -> str:
+def create_general_summary_query(dataset_ids: [str]) -> str:
     query_for_all_general_summaries = ',\n'.join([
         _query_for_general_summary(dataset_id) for dataset_id in dataset_ids
     ])
@@ -25,6 +25,22 @@ def create_general_summary_query(dataset_ids: list) -> str:
                             + '\n ORDER BY Play_Date'
 
     return general_summary_query
+
+
+def create_player_summary_query(dataset_ids: [str]) -> str:
+    query_for_all_player_summaries = '\nUNION ALL\n'.join([
+        _query_for_player_summary(dataset_id) for dataset_id in dataset_ids
+    ])
+    player_summary_query = \
+        f"""WITH all_player_summaries AS (
+            {query_for_all_player_summaries}
+            )
+            SELECT Name, SUM(Winnings_per_Player)
+            FROM all_player_summaries
+            GROUP BY Name
+        """
+
+    return player_summary_query
 
 
 def _query_for_general_summary(dataset_id: str) -> str:
@@ -78,3 +94,17 @@ def _query_for_general_summary(dataset_id: str) -> str:
                 (Total_Winnings / (100 * Num_of_Players)) AS Winnings_per_Player, Winning_Match_Type
                 FROM collapsed_to_one_row_{dataset_id}
             )"""
+
+
+def _query_for_player_summary(dataset_id: str) -> str:
+    """
+    Insert dataset_id as Play_Date,
+    Select Name,
+    Compute Winnings per player
+    """
+    return \
+        f"""SELECT '{dataset_id}' AS Play_Date, Name, 
+                    ((SELECT SUM(CAST(REGEXP_REPLACE(Prize, r"[\D]+", "") AS INT64)) FROM `{dataset_id}.results`)/
+                     (100 * (SELECT COUNT(*) FROM `{dataset_id}.results`))
+                    ) AS Winnings_per_Player
+            FROM `{dataset_id}.results`"""
