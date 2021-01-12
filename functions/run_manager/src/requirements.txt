@@ -15,3 +15,6 @@ six==1.15.0
 soupsieve==2.1; python_version >= "3.0"
 urllib3==1.26.2
 pandas-gbq
+
+# cloud_utils
+google-cloud-logging

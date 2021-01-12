@@ -14,9 +14,13 @@ aiohttp = "^3.7.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.0"
+# ./functions/run_manager_between
 google-cloud-bigquery = "^2.6.1"
 aiohttp = "^3.7.3"
+# ./functions/publish_message
 google-cloud-pubsub = "^2.2.0"
+# ./cloud_utils/logging.py
+google-cloud-logging = "^2.1.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
