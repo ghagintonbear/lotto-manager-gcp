@@ -38,7 +38,7 @@ do
         TRIGGER_TYPE=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep trigger`
         MEMORY=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep memory`
         TIMEOUT=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep timeout`
-        LOAD_LIBS=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep manager | cut -d "=" -f 2-`
+        LOAD_LIBS=`cat ${FUNCTION_NAME}/variables.txt | tr ' ' '\n' | grep load | cut -d "=" -f 2-`
 
         # https://cloud.google.com/sdk/gcloud/reference/beta/builds/triggers/create/github
         gcloud beta builds triggers create github \
