@@ -2,4 +2,4 @@ trigger-topic=scheduled-weekly-9am
 runtime=python38
 memory=256MB
 timeout=60s
-manager=yes
+load=manager

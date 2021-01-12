@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 
 from manager.tools import (
-    get_last_friday_date, assert_values_in_range, currency_to_int
+    get_last_friday_date, assert_values_in_range
 )
 
 
@@ -66,14 +66,3 @@ def test_assert_values_in_range_raise_key_error(selected_dataframe):
     cols = ['Number 1', 'Number 5']
     with pytest.raises(KeyError, match=r'.* not in date.columns.'):
         assert_values_in_range(selected_dataframe.astype(str), start=1, end=9, cols=cols)
-
-
-def test_currency_to_int():
-    from pandas import Series
-    from pandas.testing import assert_series_equal
-
-    currency = Series(["£0.00", "£6.99", "£1,000,00.00", "'Â£9,9..9 9", "£%^$\"£535.34£$£%£$"])
-
-    expected = Series([0, 699, 10000000, 9999, 53534], dtype='int64')
-
-    assert_series_equal(currency_to_int(currency), expected)

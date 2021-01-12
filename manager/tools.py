@@ -18,12 +18,6 @@ def get_last_friday_date(run_date: date) -> (date, str):
     return last_fri, last_fri.strftime('%Y_%m_%d_%b_%a')
 
 
-def add_sum_row(col: str, data: pd.DataFrame) -> pd.DataFrame:
-    total = data.sum()
-    total[col] = 'SUM'
-    return data.append(total, ignore_index=True)
-
-
 def assert_values_in_range(data: pd.DataFrame, start: int, end: int, cols: list):
     """ checks if selected numbers in given data are within a range. """
     if not cols:
@@ -37,7 +31,3 @@ def assert_values_in_range(data: pd.DataFrame, start: int, end: int, cols: list)
     if not mask.all():
         raise ValueError(f'The following data are not between [{start}, {end}] inclusive:\n{data[~mask]}')
 
-
-def currency_to_int(currency: pd.Series) -> pd.Series:
-    """ removes all non digit characters. Moved to func to test."""
-    return currency.str.replace(r'[\D]', '').astype('int64')

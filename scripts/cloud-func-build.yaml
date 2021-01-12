@@ -21,12 +21,18 @@ steps:
         && echo "" \
         && echo "PROJECT_ID=$PROJECT_ID" \
         && echo "" \
-        && echo "Using manager? ${_WITH_MANAGER}" \
-        && if [ "${_WITH_MANAGER}" = 'yes' ]; then \
+        && echo "${_FUNCTION_NAME} asked to load: ${_LOAD_LIBS}" \
+        && echo "" \
+        && if [[ "${_LOAD_LIBS}" == *"manager"* ]]; then \
           echo "Copying 'manager' folder as subdir to 'src' to enable local reuse of shared folder" \
           && cp -r ../../manager src/ \
           && echo "Copying 'manager tests' folder as subdir to function folder to enable local reuse of shared folder" \
           && cp -r ../../tests . \
+          && echo ""; \
+        fi \
+        && if [[ "${_LOAD_LIBS}" == *"cloud_utils"* ]]; then \
+          echo "Copying 'cloud_utils' folder as subdir to 'src' to enable local reuse of shared folder" \
+          && cp -r ../../cloud_utils src/ \
           && echo ""; \
         fi \
         && echo "Base folder:" \
