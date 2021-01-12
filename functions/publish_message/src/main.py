@@ -3,6 +3,7 @@ import os
 import google.cloud.pubsub_v1 as pubsub
 
 from cloud_utils.handle_requests import extract_field_from_request
+from cloud_utils.logging import cloud_log
 
 """ Example JSON trigger:
 {
@@ -35,8 +36,8 @@ def publish_message(request):
     try:
         publish_future = publisher.publish(topic_path, message_bytes, **attributes)
         publish_future.result()  # Verify the publish succeeded
-        print(f'Message {message} published.')
+        cloud_log(f'Message {message} published.')
         return 'Successfully Published'
     except Exception as e:
-        print(e)
+        cloud_log(repr(e), 'error')
         return e, 500

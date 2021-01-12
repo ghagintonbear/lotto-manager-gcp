@@ -8,6 +8,8 @@ from manager.bigquery.read import read_selected_numbers
 from manager.bigquery.write import create_bigquery_dataset, write_dataframe_to_bigquery, write_dictionary_to_bigquery
 from manager.bigquery.queries import run_query, create_general_summary_query, create_player_summary_query
 
+from cloud_utils.logging import cloud_log
+
 
 def establish_results_in_bigquery(dataset_name: str, results: pd.DataFrame,
                                   draw_result: dict, prize_breakdown: dict) -> None:
@@ -23,7 +25,7 @@ def establish_results_in_bigquery(dataset_name: str, results: pd.DataFrame,
     write_dictionary_to_bigquery(bq_client, data=prize_breakdown, col_names=['Match_Type', 'Prize_Per_UK_Winner'],
                                  table_name='prize_breakdown', dataset_name=dataset_name)
 
-    print(f'Successfully written all results to BigQuery {os.getenv("PROJECT_ID")}.{dataset_name}')
+    cloud_log(f'Successfully written all results to BigQuery {os.getenv("PROJECT_ID")}.{dataset_name}')
     return
 
 
@@ -50,6 +52,6 @@ def cumulating_results() -> None:
             destination_table_name='player_summary'
         )
     else:
-        print('func "cumulate_results" Found No Datasets with results')
+        cloud_log('func "cumulate_results" Found No Datasets with results', 'error')
 
     return

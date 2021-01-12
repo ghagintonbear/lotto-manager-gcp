@@ -2,6 +2,8 @@ import os
 
 import google.cloud.bigquery as bq
 
+from cloud_utils.logging import cloud_log
+
 
 def run_query(client: bq.Client, query: str, destination_table_name: str) -> None:
     job_config = bq.QueryJobConfig(
@@ -10,7 +12,7 @@ def run_query(client: bq.Client, query: str, destination_table_name: str) -> Non
     )
     query_job = client.query(query, job_config=job_config)
     general_summary_job_result = query_job.result()
-    print(f'{destination_table_name}_query_job_result completed?: {bool(general_summary_job_result)}')
+    cloud_log(f'{destination_table_name}_query_job_result completed?: {bool(general_summary_job_result)}')
     return
 
 

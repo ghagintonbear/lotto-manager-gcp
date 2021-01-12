@@ -6,6 +6,8 @@ from manager.check_matches import collect_winning_numbers, check_matches_on_sele
 from manager.scrape_results import scrape_historical_results, scrape_prize_breakdown, extract_draw_result
 from manager.tools import get_last_friday_date
 
+from cloud_utils.logging import cloud_log
+
 
 def run_manager(event, _context):
     """Cloud Function to be triggered by Pub/Sub.
@@ -19,7 +21,7 @@ def run_manager(event, _context):
     """
     if 'data' in event:
         pubsub_message = base64.b64decode(event['data']).decode('utf-8')
-        print(f'PubSub event: "{pubsub_message}"')
+        cloud_log(f'PubSub event: "{pubsub_message}"')
 
     if 'attributes' in event and event['attributes'] is not None:
         attributes = event['attributes']

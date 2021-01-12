@@ -1,5 +1,7 @@
 from typing import Union
 
+from cloud_utils.logging import cloud_log
+
 
 def extract_field_from_request(request, field_name: str) -> Union[str, dict]:
     """ generalised function of logic shown here: https://cloud.google.com/functions/docs/writing/http#sample_usage """
@@ -12,7 +14,7 @@ def extract_field_from_request(request, field_name: str) -> Union[str, dict]:
         field_contents = request_args[field_name]
     else:
         message = f'"{field_name}" not defined via JSON or arguments in http header'
-        print(f'ERROR: {message}')
+        cloud_log(message, 'error')
         raise RuntimeError(message)
 
     return field_contents

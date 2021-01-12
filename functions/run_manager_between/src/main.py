@@ -9,6 +9,7 @@ import pandas as pd
 
 from cloud_utils.handle_requests import extract_field_from_request
 from cloud_utils.authentication import create_authenticated_cloud_function_header
+from cloud_utils.logging import cloud_log
 
 """ Example JSON trigger:
 {
@@ -32,7 +33,7 @@ def run_manager_between(request):
     end_date = _str_to_date(end_date_str)
 
     if start_date >= end_date:
-        print(f'Start Date: {start_date} is NOT before End Date: {end_date}. Stopping here.')
+        cloud_log(f'Start Date: {start_date} is NOT before End Date: {end_date}. Stopping here.')
         return
 
     date_collection = pd.date_range(start_date, end_date, freq="7D")
@@ -79,7 +80,7 @@ async def publish_message_async(session, endpoint, run_date, cumulate_flag):
             text_response = await response.text()
 
             if response.status == 200:
-                print(f'Completed on attempt: #{attempt_number} for args={json_args}')
+                cloud_log(f'Completed on attempt: #{attempt_number} for args={json_args}')
                 return text_response
             else:
                 failed_attempts.append((response.status, endpoint, text_response))
@@ -87,9 +88,10 @@ async def publish_message_async(session, endpoint, run_date, cumulate_flag):
                 if attempt_number < MAXIMUM_NUMBER_OF_ATTEMPTS - 1:
                     sleep_time = uniform(1, 16)
                     await asyncio.sleep(sleep_time)
-                    print(f'run_manager_between slept for: {sleep_time:.2f}s')
+                    cloud_log(f'run_manager_between slept for: {sleep_time:.2f}s', 'warning')
 
-    print(f'Failed after {MAXIMUM_NUMBER_OF_ATTEMPTS} attempts for args={json_args}. Reasons: {failed_attempts}')
+    cloud_log(f'Failed after {MAXIMUM_NUMBER_OF_ATTEMPTS} attempts for args={json_args}. Reasons: {failed_attempts}',
+              'warning')
     return f'Failed {MAXIMUM_NUMBER_OF_ATTEMPTS} Times'
 
 
@@ -97,6 +99,8 @@ def _str_to_date(a_date: str, date_format: str = '%Y-%m-%d') -> date:
     try:
         result_date = datetime.strptime(a_date, date_format).date()
     except ValueError as ve:
+        message = f'Date given: {a_date}, does not match expected date format: {date_format}'
+        cloud_log(message, 'error')
         raise ValueError(f'Date given: {a_date}, does not match expected date format: {date_format}') from ve
 
     return result_date
