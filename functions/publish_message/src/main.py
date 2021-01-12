@@ -1,7 +1,8 @@
 import os
-from typing import Union
 
 import google.cloud.pubsub_v1 as pubsub
+
+from cloud_utils.handle_requests import extract_field_from_request
 
 """ Example JSON trigger:
 {
@@ -39,19 +40,3 @@ def publish_message(request):
     except Exception as e:
         print(e)
         return e, 500
-
-
-def extract_field_from_request(request, field_name: str) -> Union[str, dict]:
-    request_json = request.get_json()
-    request_args = request.args
-
-    if request_json and field_name in request_json:
-        field_contents = request_json[field_name]
-    elif request_args and field_name in request_args:
-        field_contents = request_args[field_name]
-    else:
-        message = f'"{field_name}" not defined via JSON or arguments in http header'
-        print(f'ERROR: {message}')
-        raise RuntimeError(message)
-
-    return field_contents

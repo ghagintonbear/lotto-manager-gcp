@@ -1,12 +1,14 @@
 import asyncio
 import json
 import os
+from datetime import date, datetime
 from random import uniform
 
 import aiohttp
 import pandas as pd
 
-from utilities import extract_date_field_from_request, create_authenticated_cloud_function_header
+from cloud_utils.handle_requests import extract_field_from_request
+from cloud_utils.authentication import create_authenticated_cloud_function_header
 
 """ Example JSON trigger:
 {
@@ -23,8 +25,11 @@ MAXIMUM_NUMBER_OF_ATTEMPTS = 5
 
 
 def run_manager_between(request):
-    start_date = extract_date_field_from_request(request, 'start_date')
-    end_date = extract_date_field_from_request(request, 'end_date')
+    start_date_str = extract_field_from_request(request, 'start_date')
+    end_date_str = extract_field_from_request(request, 'end_date')
+
+    start_date = _str_to_date(start_date_str)
+    end_date = _str_to_date(end_date_str)
 
     if start_date >= end_date:
         print(f'Start Date: {start_date} is NOT before End Date: {end_date}. Stopping here.')
@@ -49,13 +54,14 @@ async def publish_messages_async(endpoint, collection):
 
     async with aiohttp.ClientSession(headers=header) as session:
         return await asyncio.gather(
-            *(publish_message_async(session, endpoint, date, cumulate_flag) for date, cumulate_flag in collection),
+            *(publish_message_async(session, endpoint, run_date, cumulate_flag) for run_date, cumulate_flag in
+              collection),
             return_exceptions=True
         )
 
 
-async def publish_message_async(session, endpoint, date, cumulate_flag):
-    date_str = f'{date:%Y-%m-%d}'
+async def publish_message_async(session, endpoint, run_date, cumulate_flag):
+    date_str = f'{run_date:%Y-%m-%d}'
     json_args = {
         "topic_name": "scheduled-weekly-9am",
         "message": f"`run_manager_between` asked to publish on `scheduled-weekly-9am` for `run_date={date_str}`",
@@ -85,3 +91,12 @@ async def publish_message_async(session, endpoint, date, cumulate_flag):
 
     print(f'Failed after {MAXIMUM_NUMBER_OF_ATTEMPTS} attempts for args={json_args}. Reasons: {failed_attempts}')
     return f'Failed {MAXIMUM_NUMBER_OF_ATTEMPTS} Times'
+
+
+def _str_to_date(a_date: str, date_format: str = '%Y-%m-%d') -> date:
+    try:
+        result_date = datetime.strptime(a_date, date_format).date()
+    except ValueError as ve:
+        raise ValueError(f'Date given: {a_date}, does not match expected date format: {date_format}') from ve
+
+    return result_date
