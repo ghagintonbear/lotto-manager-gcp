@@ -22,6 +22,19 @@ gcp_project_id = os.getenv('PROJECT_ID')
 
 # Publishes a message to a Cloud Pub/Sub topic.
 def publish_message(request):
+    """ publishes a message to the named topic
+
+        Triggered by http request.
+
+    Args:
+         request (flask.Request): The request object.
+        <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
+        Required fields in request json:
+            - "topic_name" (used as str): name of topic where message will be published
+            - "message"    (used as str): message to be published (primarily for logs)
+            - "attribute" (used as dict): dict containing additional attributes to be passed
+                                          topic subscribers as keyword arguments.
+    """
     topic_name = extract_field_from_request(request, 'topic_name')
     message = extract_field_from_request(request, 'message')
     attributes = extract_field_from_request(request, 'attributes')
@@ -29,6 +42,7 @@ def publish_message(request):
     # References an existing topic
     topic_path = publisher.topic_path(gcp_project_id, topic_name)
 
+    # message must be byte string
     message_bytes = message.encode('utf-8')
 
     # Publishes a message

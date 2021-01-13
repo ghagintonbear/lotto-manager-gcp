@@ -4,17 +4,26 @@ import google.cloud.bigquery as bq
 
 
 def run_query(client: bq.Client, query: str, destination_table_name: str) -> None:
+    """ High level func which runs a query and writes result to BigQuery. """
     job_config = bq.QueryJobConfig(
         destination='.'.join([os.getenv("PROJECT_ID"), 'manager', destination_table_name]),
-        write_disposition='WRITE_TRUNCATE'
+        write_disposition='WRITE_TRUNCATE'  # overwrite table any existing table.
     )
     query_job = client.query(query, job_config=job_config)
-    general_summary_job_result = query_job.result()
-    print(f'{destination_table_name}_query_job_result completed?: {bool(general_summary_job_result)}')
+    job_result = query_job.result()
+    print(f'{destination_table_name}_query job completed?: {bool(job_result)}')
     return
 
 
 def create_general_summary_query(dataset_ids: [str]) -> str:
+    """ join queries created using `_query_for_general_summary` to construct the final query which will
+        create the desired general summary table, where columns are:
+            - "Play_Date" (index): Date of draw (also the dateset_id)
+            - "Num_of_Players":	Number of players who played in a given draw
+            - "Total_Winnings":	Total of winnings from all players in a given draw
+            - "Winnings_per_Player": Total_Winnings/Num_of_Players
+            - "Winning_Match_Type": Match types which accomplished winnings. `null` if no winnings.
+    """
     query_for_all_general_summaries = ',\n'.join([
         _query_for_general_summary(dataset_id) for dataset_id in dataset_ids
     ])
@@ -28,6 +37,13 @@ def create_general_summary_query(dataset_ids: [str]) -> str:
 
 
 def create_player_summary_query(dataset_ids: [str]) -> str:
+    """ join queries created using `_query_for_player_summary` to construct the final query which will
+        create the desired player summary table, where columns are:
+            - "Names" (index): distinct list of all players names, who to have ever played.
+            - "Total_Cumulated_Winnings": total winnings per player for all the rounds this player
+                                           participated in.
+            - "Days_Played": Number of rounds (or draws played) by a given player.
+    """
     query_for_all_player_summaries = '\nUNION ALL\n'.join([
         _query_for_player_summary(dataset_id) for dataset_id in dataset_ids
     ])
@@ -44,7 +60,7 @@ def create_player_summary_query(dataset_ids: [str]) -> str:
 
 
 def _query_for_general_summary(dataset_id: str) -> str:
-    """
+    """ **query to create tables needed from one dataset**
     * results_with_new_columns:
         select columns of interest and create Play_Date col
         convert Prize (type string, [£,.0-9]) to int to avoid rounding errors
@@ -97,7 +113,7 @@ def _query_for_general_summary(dataset_id: str) -> str:
 
 
 def _query_for_player_summary(dataset_id: str) -> str:
-    """
+    """ **query to create tables needed from one dataset**
     Insert dataset_id as Play_Date,
     Select Name,
     Compute Winnings per player
