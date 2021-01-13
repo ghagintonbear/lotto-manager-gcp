@@ -28,26 +28,26 @@ fi
 
 
 echo
-echo "*** STEP 1/7: Creating Project ***"
+echo "*** STEP 1/8: Creating Project ***"
 echo
 gcloud projects create ${PROJECT_ID}
 
 PROJECT_NUMBER=`gcloud projects list --filter=${PROJECT_ID} --format="value(PROJECT_NUMBER)"`
 
 echo
-echo "*** STEP 2/7: Link Project to billing account ***"
+echo "*** STEP 2/8: Link Project to billing account ***"
 echo
 gcloud alpha billing projects link ${PROJECT_ID} \
     --billing-account ${BILLING_ACCOUNT_ID}
 
 echo
-echo "*** STEP 3/7: Selecting Project ***"
+echo "*** STEP 3/8: Selecting Project ***"
 echo
 gcloud config set project ${PROJECT_ID}
 
 
 echo
-echo "*** STEP 4/7: Enabling GCP APIs ***"
+echo "*** STEP 4/8: Enabling GCP APIs ***"
 echo
 gcloud services enable cloudtrace.googleapis.com            # Cloud Trace API
 gcloud services enable logging.googleapis.com               # Cloud Logging API
@@ -61,15 +61,26 @@ gcloud services enable bigquery.googleapis.com              # BigQuery usage
 
 
 echo
-echo "*** STEP 5a/7 Creating BigQuery Database***"
+echo "*** STEP 5/8 Creating BigQuery Database***"
 echo
 bq --location=${REGION} --project_id=${PROJECT_ID} mk \
     --dataset \
     --description "Key data files for ${PROJECT_ID}" \
     ${PROJECT_ID}:manager
 
+
 echo
-echo "*** STEP 5b/7 Creating BigQuery Table using './selected_numbers.csv'***"
+echo "*** STEP 6a/8 Checking if ./selected_numbers.csv are valid...***"
+echo
+cd ../
+pip3 install pandas
+python3 -c "from manager import tools; tools.validate_selected_numbers()"
+echo "./selected_numbers.csv are VALID"
+cd ./scripts
+
+
+echo
+echo "*** STEP 6b/8 Creating BigQuery Table using './selected_numbers.csv'***"
 echo
 bq load --autodetect --source_format=CSV \
     ${PROJECT_ID}:manager.selected_numbers \
@@ -77,7 +88,7 @@ bq load --autodetect --source_format=CSV \
 
 
 echo
-echo "*** STEP 6/7 Adding permissions"
+echo "*** STEP 7/8 Adding permissions"
 echo
 # note gcf-admin-robot = Google Cloud Functions Service Agent
 # and PROJECT_ID@appspot.gserviceaccount.com is App engine default service account:
@@ -114,7 +125,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 
 
 echo
-echo "*** STEP 7/7 Creating Cloud Scheduler and Topic ***"
+echo "*** STEP 8/8 Creating Cloud Scheduler and Topic ***"
 echo
 # Have to create an app engine app in order to use scheduler
 gcloud app create --project=${PROJECT_ID} --region=${REGION}
