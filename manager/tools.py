@@ -1,4 +1,6 @@
+import re
 from datetime import timedelta, date
+from typing import Iterable
 
 import pandas as pd
 
@@ -31,3 +33,44 @@ def assert_values_in_range(data: pd.DataFrame, start: int, end: int, cols: list)
     if not mask.all():
         raise ValueError(f'The following data are not between [{start}, {end}] inclusive:\n{data[~mask]}')
 
+
+def _make_names_bq_safe(name: str) -> str:
+    valid_chars = re.findall(r'[a-zA-Z0-9_]+', name)
+    if valid_chars:
+        return '_'.join(valid_chars)
+    else:
+        raise ValueError(f'Invalid Name: Could not find any valid ("a-zA-Z0-9_") characters in selected_numbers:{name}')
+
+
+def _has_needed_columns(cols: Iterable[str]):
+    needed = {'Name', 'Number_1', 'Number_2', 'Number_3', 'Number_4', 'Number_5', 'Lucky_Star_1', 'Lucky_Star_2'}
+    if not needed.issubset(cols):
+        raise ValueError(f'Key Columns: {needed.difference(cols)} are missing from selected numbers.')
+    return
+
+
+def validate_selected_numbers(path: str = './selected_numbers.csv'):
+    """ Read manager.selected_numbers ('./selected_numbers.csv') from BigQuery and validates them. Ensures:
+        * dataframe to be written to BigQuery has all the correct columns
+        * names in Name col can used as valid bigquery column names.
+        * there are no duplicates in Name col.
+        * numbers selected are within valid ranges
+
+    """
+    selected_numbers = pd.read_csv(path)
+
+    _has_needed_columns(selected_numbers.columns)
+
+    selected_numbers['Name'] = selected_numbers['Name'].apply(_make_names_bq_safe)
+
+    if not selected_numbers['Name'].is_unique:
+        duplicates = selected_numbers['Name'].value_counts()
+        raise ValueError(f'"Name" in Selected numbers needs to be unique. Correct:\n{duplicates[duplicates > 1]}')
+
+    number_cols = [col for col in selected_numbers.columns if col.startswith('Number_')]
+    assert_values_in_range(selected_numbers, start=1, end=50, cols=number_cols)
+
+    star_cols = [col for col in selected_numbers.columns if col.startswith('Lucky_Star_')]
+    assert_values_in_range(selected_numbers, start=1, end=12, cols=star_cols)
+
+    return
