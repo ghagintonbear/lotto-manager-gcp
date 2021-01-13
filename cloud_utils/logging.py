@@ -9,7 +9,7 @@ logging_client = Client()
 cloud_logger = logging_client.logger(os.getenv('PROJECT_ID'))
 
 
-def cloud_log(message: str, level: str = Literal['info', 'warning', 'error']) -> None:
+def cloud_log(message: str, level: Literal['info', 'warning', 'error'] = 'info') -> None:
     cloud_logger.log_struct({'level': level, 'message': message}, resource=resource)
 
     return
