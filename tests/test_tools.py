@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from manager.tools import (
-    get_last_friday_date, assert_values_in_range, validate_selected_numbers, _make_names_bq_safe, _has_needed_columns
+    get_last_friday_date, assert_values_in_range, validate_selected_numbers, has_needed_columns
 )
 
 
@@ -99,23 +99,8 @@ def test_get_selected_numbers_valid_run(selected_dataframe):
 
 def test_has_needed_columns_raises_value_error(selected_cols):
     with pytest.raises(ValueError, match=r'Key Columns: .* are missing from selected numbers.'):
-        _has_needed_columns(selected_cols)
+        has_needed_columns(selected_cols)
 
 
 def test_has_needed_columns(selected_dataframe):
-    assert _has_needed_columns(selected_dataframe.columns) is None
-
-
-def test_make_names_bq_safe_raises_value_error():
-    with pytest.raises(ValueError, match='Invalid Name: .*'):
-        _make_names_bq_safe('!@#$%^&*')
-
-
-def test_make_names_bq_safe_return_valid_input():
-    name = 'Valid_Name42'
-    assert _make_names_bq_safe(name) == name
-
-
-def test_make_names_bq_safe_return_valid_chars():
-    name = ' !&#* V@lid_Name42 /*'
-    assert _make_names_bq_safe(name) == 'V_lid_Name42'
+    assert has_needed_columns(selected_dataframe.columns) is None
