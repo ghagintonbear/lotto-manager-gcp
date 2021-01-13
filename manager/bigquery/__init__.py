@@ -1,16 +1,20 @@
 import os
-import re
 
 import pandas as pd
 import google.cloud.bigquery as bq
 
+from bigquery.read import get_dataset_ids_with_results
 from manager.bigquery.read import read_selected_numbers
 from manager.bigquery.write import create_bigquery_dataset, write_dataframe_to_bigquery, write_dictionary_to_bigquery
 from manager.bigquery.queries import run_query, create_general_summary_query, create_player_summary_query
 
 
-def establish_results_in_bigquery(dataset_name: str, results: pd.DataFrame,
-                                  draw_result: dict, prize_breakdown: dict) -> None:
+def establish_results_in_bigquery(
+        dataset_name: str, results: pd.DataFrame, draw_result: dict, prize_breakdown: dict) -> None:
+    """ High level function which "establishes" given results in BigQuery. This includes:
+             - creating a dataset if one doesn't already exist
+             - writing additional results to the dataset which was just created.
+    """
     bq_client = bq.Client()
 
     create_bigquery_dataset(bq_client, dataset_name=dataset_name)
@@ -28,15 +32,12 @@ def establish_results_in_bigquery(dataset_name: str, results: pd.DataFrame,
 
 
 def cumulating_results() -> None:
+    """ High level function which runs queries on all results results tables in the selected dataset_ids.
+        Queries will produce bespoke summary tables from all results.
+    """
     bq_client = bq.Client()
 
-    datasets_ids_with_results = []
-    for dataset_list_item in bq_client.list_datasets():
-        dataset_id = dataset_list_item.dataset_id
-        if re.fullmatch(r'\d{4}_\d{2}_\d{2}_\w*', dataset_id):
-            tables_list = [table.table_id for table in bq_client.list_tables(dataset=dataset_id)]
-            if 'results' in tables_list:
-                datasets_ids_with_results.append(dataset_id)
+    datasets_ids_with_results = get_dataset_ids_with_results(bq_client)
 
     if datasets_ids_with_results:
         run_query(
@@ -50,6 +51,6 @@ def cumulating_results() -> None:
             destination_table_name='player_summary'
         )
     else:
-        print('func "cumulate_results" Found No Datasets with results')
+        print('func "cumulating_results" Found No Datasets with results')
 
     return

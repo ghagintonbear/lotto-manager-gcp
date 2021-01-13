@@ -5,7 +5,10 @@ import pandas as pd
 from google.cloud.exceptions import NotFound
 
 
-def write_dictionary_to_bigquery(client: bq.Client, data: dict, col_names: list, table_name: str, dataset_name: str):
+def write_dictionary_to_bigquery(
+        client: bq.Client, data: dict, col_names: [str, str], table_name: str, dataset_name: str) -> None:
+    """ First converts dict to DataFrame, structure: {col_name: data.keys(), col_name: data.values()}
+        Then passes the result to write_dataframe_to_bigquery. """
     data = dict(zip(col_names, [data.keys(), data.values()]))
     data = pd.DataFrame.from_dict(data, orient='columns')
 
@@ -13,7 +16,8 @@ def write_dictionary_to_bigquery(client: bq.Client, data: dict, col_names: list,
     return
 
 
-def write_dataframe_to_bigquery(client: bq.Client, data: pd.DataFrame, table_name: str, dataset_name: str):
+def write_dataframe_to_bigquery(client: bq.Client, data: pd.DataFrame, table_name: str, dataset_name: str) -> None:
+    """ Writes Pandas Dataframe to given BigQuery dataset_name. Always overwrites existing data if any. """
     table_id = '.'.join([os.getenv('PROJECT_ID'), dataset_name, table_name])
 
     job_config = bq.LoadJobConfig(
@@ -39,7 +43,8 @@ def write_dataframe_to_bigquery(client: bq.Client, data: pd.DataFrame, table_nam
     return
 
 
-def create_bigquery_dataset(client: bq.Client, dataset_name: str):
+def create_bigquery_dataset(client: bq.Client, dataset_name: str) -> None:
+    """ Creates BigQuery dataset, if one doesn't exist already. """
     dataset_id = os.getenv('PROJECT_ID') + '.' + dataset_name
 
     try:
