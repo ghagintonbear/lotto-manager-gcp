@@ -1,9 +1,7 @@
-import os
-
 import pandas as pd
 import google.cloud.bigquery as bq
 
-from bigquery.read import get_dataset_ids_with_results
+from manager.bigquery.read import get_dataset_ids_with_results
 from manager.bigquery.read import read_selected_numbers
 from manager.bigquery.write import create_bigquery_dataset, write_dataframe_to_bigquery, write_dictionary_to_bigquery
 from manager.bigquery.queries import run_query, create_general_summary_query, create_player_summary_query
@@ -27,7 +25,7 @@ def establish_results_in_bigquery(
     write_dictionary_to_bigquery(bq_client, data=prize_breakdown, col_names=['Match_Type', 'Prize_Per_UK_Winner'],
                                  table_name='prize_breakdown', dataset_name=dataset_name)
 
-    print(f'Successfully written all results to BigQuery {os.getenv("PROJECT_ID")}.{dataset_name}')
+    print(f'Successfully written all results to BigQuery {bq_client.project}.{dataset_name}')
     return
 
 

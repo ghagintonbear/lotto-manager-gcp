@@ -49,9 +49,9 @@ steps:
         && pip install -r src/requirements.txt \
         && cd src \
         && printf "__pycache_/\n*.py[cod]\n*\$py.class\n.pytest_cache/\nv/" >> .gcloudignore \
-        && echo "GCP_PROJECT=$PROJECT_ID python -m pytest -v ../tests" \
-        && if [ "$(python -m pytest --co | grep "^collected" | cut -d ' ' -f2)" -gt 0 ]; then \
-          GCP_PROJECT=$PROJECT_ID python -m pytest -v ../tests;
+        && echo "GCP_PROJECT=$PROJECT_ID python -m pytest -vv ../tests" \
+        && if [ -n "$(ls -A ../tests)" ]; then \
+          GCP_PROJECT=$PROJECT_ID python -m pytest -vv ../tests;
         fi
 
   # https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-functions
