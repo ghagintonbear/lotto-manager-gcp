@@ -1,12 +1,13 @@
-import os
-
 import google.cloud.bigquery as bq
 
 
-def run_query(client: bq.Client, query: str, destination_table_name: str) -> None:
+def run_query(
+        client: bq.Client, query: str, destination_table_name: str, destination_dataset_name: str = 'manager'
+) -> None:
+
     """ High level func which runs a query and writes result to BigQuery. """
     job_config = bq.QueryJobConfig(
-        destination='.'.join([os.getenv("PROJECT_ID"), 'manager', destination_table_name]),
+        destination='.'.join([client.project, destination_dataset_name, destination_table_name]),
         write_disposition='WRITE_TRUNCATE'  # overwrite table any existing table.
     )
     query_job = client.query(query, job_config=job_config)
