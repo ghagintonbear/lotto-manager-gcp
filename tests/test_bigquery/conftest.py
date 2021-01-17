@@ -18,10 +18,10 @@ def bigquery_client():
     yield client
 
     print('Session Finished, Deleting all test datasets and tables.')
-    datasets_to_delete = list(dataset_names.values()) + ['test_manager']
-    for dataset_name in datasets_to_delete:
-        dataset_reference = client.project + '.' + dataset_name
-        client.delete_dataset(dataset_reference, delete_contents=True, not_found_ok=True)
+    # datasets_to_delete = list(dataset_names.values()) + ['test_manager']
+    # for dataset_name in datasets_to_delete:
+    #     dataset_reference = client.project + '.' + dataset_name
+    #     client.delete_dataset(dataset_reference, delete_contents=True, not_found_ok=True)
 
 
 @fixture(scope='session')
