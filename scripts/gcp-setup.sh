@@ -129,9 +129,10 @@ gcloud iam roles create BigQueryTester --project=${PROJECT_ID} \
   --title="BigQuery Tester" --description="Appropriate permissions to run integration tests with BigQuery." \
   --permissions=bigquery.readsessions.getData,bigquery.readsessions.create,bigquery.jobs.create,bigquery.datasets.create,bigquery.datasets.delete,bigquery.tables.create,bigquery.tables.list,bigquery.tables.delete,bigquery.tables.getData
 
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member=serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
-    --role=roles/BigQueryTester
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member=serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
+    --role=projects/$PROJECT_ID}/roles/BigQueryTester
+
 
 echo
 echo "*** STEP 8/8 Creating Cloud Scheduler and Topic ***"
