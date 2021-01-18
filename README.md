@@ -17,6 +17,17 @@ Forked [lotto-manager](https://github.com/ghagintonbear/lotto-manager) to solve 
 * Dynamically generate SQL queries to produce summary tables.
 * Schedule actions with [Cloud PubSub](https://cloud.google.com/pubsub).
 
+# Contents
+
+* [Project Structure](#project-structure)
+* [Running lotto-manager-gcp](#running-lotto-manager-gcp)
+* [Manager](#manager)
+* [Manager Tests](#manager-tests)
+* [Scripts](#scripts)
+   * [Create GCP Project](#gcp-setupsh)
+   * [Setup CI/CD](#gcp-github-triggerssh)
+   * [Function Build Config](#cloud-func-buildyaml)
+
 # Project Structure
 
 ```
@@ -36,7 +47,7 @@ Forked [lotto-manager](https://github.com/ghagintonbear/lotto-manager) to solve 
 │   ├── gcp-github-triggers.sh      # script used to build all cloud function github triggers
 │   └── gcp-setup.sh                # script used to create bespoke GCP project
 ├──tests                            # tests for manager package, ran during each deployment
-└── selected_numbers.csv            # Numbers selected by players. Loaded to BigQuery by ./scripts/gcp-setup.sh 
+└── selected_numbers.csv            # Numbers selected by players. Loaded to BigQuery by gcp-setup.sh 
 ```
 
 # Running lotto-manager-gcp
@@ -136,7 +147,7 @@ The script will:
 1. Provide all the various APIs the minimum permissions needed to do their respective jobs.
 1. Create a Cloud Scheduler and Topic to trigger the `lotto-manager` every week.
 
-### `gcp-setup.sh`
+### `gcp-github-triggers.sh`
 
 The script expects: 
 * One argument, (string) reference to your git branch used by CI/CD triggers. i.e. When you push to your branch,
